@@ -4,5 +4,11 @@
     "type": "system",
     "message": "Simulation reset",
     "at": "2026-05-16T19:12:19.305461+00:00"
+  },
+  {
+    "day": 1,
+    "type": "assignment",
+    "message": "A01-html-profile: status changed from locked to available",
+    "at": "2026-05-16T19:38:01.584710+00:00"
   }
 ]
