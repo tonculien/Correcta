@@ -1,0 +1,43 @@
+name: Correcta Daily Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      grader:
+        description: "Grader mode"
+        required: false
+        default: "mock"
+        type: choice
+        options:
+          - mock
+          - opencode
+  schedule:
+    - cron: "5 6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Correcta daily update
+        run: |
+          python backend/scheduler.py --daily --grader "${{ github.event.inputs.grader || 'mock' }}"
+
+      - name: Commit Correcta updates
+        run: |
+          git config user.name "correcta-bot"
+          git config user.email "correcta-bot@users.noreply.github.com"
+          git add courses data
+          git commit -m "Correcta daily update" || echo "No changes to commit"
+          git push
