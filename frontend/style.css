@@ -65,3 +65,18 @@ pre { padding: 14px; overflow: auto; }
 .rubric-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
 .rubric-table th, .rubric-table td { text-align: left; border-bottom: 1px solid var(--line); padding: 10px; vertical-align: top; }
 @media (max-width: 720px) { .hero, .control-card { flex-direction: column; align-items: stretch; } .grade-pill { text-align: left; } }
+
+.submit-panel {
+  margin: 18px 0 20px;
+  padding: 16px;
+  border: 1px solid rgba(155,220,255,.22);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(155,220,255,.12), rgba(255,255,255,.04));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+.submit-panel h3 { margin: 0 0 6px; }
+.submit-button { white-space: nowrap; }
+@media (max-width: 720px) { .submit-panel { flex-direction: column; align-items: stretch; } }

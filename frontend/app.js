@@ -38,6 +38,28 @@ function escapeHTML(value) {
     .replaceAll("'", "&#039;");
 }
 
+
+function getGitHubSubmitUrl(assignmentId) {
+  // GitHub Pages URL normally looks like:
+  // https://<owner>.github.io/<repo>/frontend/
+  const host = window.location.hostname;
+  const parts = window.location.pathname.split('/').filter(Boolean);
+
+  let owner = 'tonculien';
+  let repo = 'Correcta';
+
+  if (host.endsWith('.github.io')) {
+    owner = host.replace('.github.io', '');
+    if (parts.length > 0) repo = parts[0];
+  }
+
+  return `https://github.com/${owner}/${repo}/upload/main/courses/webdev-30/assignments/${assignmentId}/submissions`;
+}
+
+function canSubmitAssignment(status) {
+  return ['available', 'due_soon', 'overdue'].includes(String(status || '').toLowerCase());
+}
+
 function markdownLite(md) {
   return escapeHTML(md)
     .replace(/^# (.*)$/gm, "<h2>$1</h2>")
@@ -141,10 +163,22 @@ function showDetail(assignment, data) {
   const rubricRows = assignment.rubric.map(r => `
     <tr><td>${escapeHTML(r.criterion)}</td><td>${escapeHTML(r.points)}</td><td>${escapeHTML(r.description)}</td></tr>
   `).join("");
+  const submitUrl = getGitHubSubmitUrl(assignment.assignmentId);
+  const submitBlock = canSubmitAssignment(data.status) ? `
+    <div class="submit-panel">
+      <div>
+        <p class="eyebrow">Submission</p>
+        <h3>Ready to submit?</h3>
+        <p class="muted">This opens the exact GitHub upload folder for this assignment.</p>
+      </div>
+      <a class="button submit-button" target="_blank" rel="noopener" href="${escapeHTML(submitUrl)}">Submit on GitHub</a>
+    </div>
+  ` : "";
   $("dialogBody").innerHTML = `
     <p class="eyebrow">${escapeHTML(assignment.assignmentId)}</p>
     <h2>${escapeHTML(assignment.title)}</h2>
     <p class="muted">${escapeHTML(assignment.summary)}</p>
+    ${submitBlock}
     <h3>Instructions</h3>
     <ul>${assignment.studentInstructions.map(x => `<li>${escapeHTML(x)}</li>`).join("")}</ul>
     <h3>Required Files</h3>
