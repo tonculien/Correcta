@@ -1,0 +1,80 @@
+{
+  "assignmentId": "A04-js-dom",
+  "courseId": "webdev-30",
+  "title": "JavaScript DOM Interaction",
+  "appearsAtDay": 17,
+  "dueAtDay": 23,
+  "estimatedTimeMinutes": 90,
+  "difficulty": "medium",
+  "summary": "Create interactive DOM behavior with JavaScript.",
+  "studentInstructions": [
+    "Create index.html, style.css, and script.js.",
+    "Add at least three interactive elements.",
+    "Use addEventListener, not inline onclick.",
+    "Use DOM selection and class/text changes."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "index.html",
+      "style.css",
+      "script.js"
+    ],
+    "optionalFiles": [
+      "images/"
+    ],
+    "acceptedFileTypes": [
+      ".html",
+      ".css",
+      ".js",
+      ".md",
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".webp"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Script linked correctly",
+      "points": 15,
+      "description": "script.js is connected correctly."
+    },
+    {
+      "criterion": "DOM selection",
+      "points": 20,
+      "description": "Uses querySelector or similar correctly."
+    },
+    {
+      "criterion": "Event handling",
+      "points": 30,
+      "description": "Uses addEventListener for interactions."
+    },
+    {
+      "criterion": "Interaction quality",
+      "points": 25,
+      "description": "Interactions meaningfully change content or style."
+    },
+    {
+      "criterion": "Code clarity",
+      "points": 10,
+      "description": "JavaScript is readable and organized."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 2,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Write output only to the assigned ai_output directory."
+  ]
+}

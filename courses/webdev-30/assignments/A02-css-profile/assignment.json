@@ -1,0 +1,79 @@
+{
+  "assignmentId": "A02-css-profile",
+  "courseId": "webdev-30",
+  "title": "Styled Profile Page",
+  "appearsAtDay": 6,
+  "dueAtDay": 10,
+  "estimatedTimeMinutes": 90,
+  "difficulty": "medium",
+  "summary": "Style the profile page using external CSS.",
+  "studentInstructions": [
+    "Create or update index.html.",
+    "Create style.css and link it in the head.",
+    "Use colors, typography, margin, padding, and border-radius.",
+    "Create at least one card-like section."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "index.html",
+      "style.css"
+    ],
+    "optionalFiles": [
+      "images/"
+    ],
+    "acceptedFileTypes": [
+      ".html",
+      ".css",
+      ".js",
+      ".md",
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".webp"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "CSS linked correctly",
+      "points": 20,
+      "description": "The HTML file correctly links to an external CSS file."
+    },
+    {
+      "criterion": "Visual hierarchy",
+      "points": 25,
+      "description": "Spacing, size, and contrast guide the reader."
+    },
+    {
+      "criterion": "Box model usage",
+      "points": 25,
+      "description": "Uses margin, padding, border, and border-radius meaningfully."
+    },
+    {
+      "criterion": "Consistency",
+      "points": 20,
+      "description": "Colors and spacing are consistent."
+    },
+    {
+      "criterion": "Code readability",
+      "points": 10,
+      "description": "HTML and CSS are readable and organized."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 2,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Write output only to the assigned ai_output directory."
+  ]
+}

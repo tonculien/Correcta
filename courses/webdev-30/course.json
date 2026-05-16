@@ -1,0 +1,26 @@
+{
+  "courseId": "webdev-30",
+  "title": "Correcta Web Development 30-Day Course",
+  "durationDays": 30,
+  "startDate": "2026-06-01T00:00:00",
+  "description": "A personal 30-day simulated web development course with assignment-based grading.",
+  "assignments": [
+    "A01-html-profile",
+    "A02-css-profile",
+    "A03-flexbox-gallery",
+    "A04-js-dom",
+    "FINAL-mini-web-app"
+  ],
+  "gradingScale": [
+    { "letter": "A", "min": 93, "gpa": 4.0 },
+    { "letter": "A-", "min": 90, "gpa": 3.7 },
+    { "letter": "B+", "min": 87, "gpa": 3.3 },
+    { "letter": "B", "min": 83, "gpa": 3.0 },
+    { "letter": "B-", "min": 80, "gpa": 2.7 },
+    { "letter": "C+", "min": 77, "gpa": 2.3 },
+    { "letter": "C", "min": 73, "gpa": 2.0 },
+    { "letter": "C-", "min": 70, "gpa": 1.7 },
+    { "letter": "D", "min": 60, "gpa": 1.0 },
+    { "letter": "F", "min": 0, "gpa": 0.0 }
+  ]
+}

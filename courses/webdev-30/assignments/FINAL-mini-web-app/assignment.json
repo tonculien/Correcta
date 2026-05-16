@@ -1,0 +1,86 @@
+{
+  "assignmentId": "FINAL-mini-web-app",
+  "courseId": "webdev-30",
+  "title": "Final Mini Web App",
+  "appearsAtDay": 24,
+  "dueAtDay": 30,
+  "estimatedTimeMinutes": 120,
+  "difficulty": "final",
+  "summary": "Build a small web app that combines HTML, CSS, and JavaScript.",
+  "studentInstructions": [
+    "Build a mini app with at least three sections or screens.",
+    "Use HTML, CSS, and JavaScript in separate files.",
+    "Include at least five meaningful interactions.",
+    "Include a short README.md explaining the app."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "index.html",
+      "style.css",
+      "script.js",
+      "README.md"
+    ],
+    "optionalFiles": [
+      "images/"
+    ],
+    "acceptedFileTypes": [
+      ".html",
+      ".css",
+      ".js",
+      ".md",
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".webp"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Functionality",
+      "points": 30,
+      "description": "The app works and meets the interaction requirements."
+    },
+    {
+      "criterion": "Design and UI",
+      "points": 20,
+      "description": "The app has a coherent, usable interface."
+    },
+    {
+      "criterion": "Code organization",
+      "points": 20,
+      "description": "Files and code are organized clearly."
+    },
+    {
+      "criterion": "Responsiveness",
+      "points": 15,
+      "description": "The app works across different screen widths."
+    },
+    {
+      "criterion": "Documentation",
+      "points": 10,
+      "description": "README explains purpose and usage."
+    },
+    {
+      "criterion": "Creativity",
+      "points": 5,
+      "description": "The project shows thoughtful original design choices."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 2,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Write output only to the assigned ai_output directory."
+  ]
+}
