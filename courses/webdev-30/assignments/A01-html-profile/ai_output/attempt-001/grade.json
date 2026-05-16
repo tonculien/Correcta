@@ -1,0 +1,51 @@
+{
+  "assignmentId": "A01-html-profile",
+  "attemptId": "attempt-001",
+  "scoreBeforeLatePenalty": 89,
+  "latePenalty": 0,
+  "finalScore": 89,
+  "letterGrade": "B+",
+  "gpaValue": 3.3,
+  "gradedAtDay": 1,
+  "gradedAt": "2026-05-16T22:39:12.884803+00:00",
+  "rubricBreakdown": [
+    {
+      "criterion": "HTML document structure",
+      "maxPoints": 25,
+      "earnedPoints": 22.2,
+      "reason": "Mock grading: requirement appears acceptable for prototype testing."
+    },
+    {
+      "criterion": "Required content",
+      "maxPoints": 35,
+      "earnedPoints": 31.2,
+      "reason": "Mock grading: requirement appears acceptable for prototype testing."
+    },
+    {
+      "criterion": "Semantic clarity",
+      "maxPoints": 20,
+      "earnedPoints": 17.8,
+      "reason": "Mock grading: requirement appears acceptable for prototype testing."
+    },
+    {
+      "criterion": "File organization",
+      "maxPoints": 10,
+      "earnedPoints": 8.9,
+      "reason": "Mock grading: requirement appears acceptable for prototype testing."
+    },
+    {
+      "criterion": "Code readability",
+      "maxPoints": 10,
+      "earnedPoints": 8.9,
+      "reason": "Mock grading: requirement appears acceptable for prototype testing."
+    }
+  ],
+  "missingRequiredFiles": [],
+  "summaryFeedback": "Mock feedback for HTML Profile Page. The grading pipeline is working.",
+  "deepNotes": "This is prototype output. Replace mock mode with opencode/api mode when the file workflow is stable.",
+  "recommendedFixes": [
+    "Review the rubric.",
+    "Check required files.",
+    "Improve clarity and consistency."
+  ]
+}

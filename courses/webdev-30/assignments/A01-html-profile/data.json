@@ -1,25 +1,25 @@
 {
   "assignmentId": "A01-html-profile",
-  "status": "available",
+  "status": "graded",
   "isVisible": true,
   "openedAtDay": 1,
   "dueAtDay": 5,
   "lastUpdatedDay": 1,
   "submission": {
-    "hasSubmission": false,
-    "currentAttemptId": null,
-    "submittedAtDay": null,
-    "submittedAtDate": null,
-    "submissionDir": null
+    "hasSubmission": true,
+    "currentAttemptId": "attempt-001",
+    "submittedAtDay": 1,
+    "submittedAtDate": "2026-05-16T22:39:12.882382+00:00",
+    "submissionDir": "/home/runner/work/Correcta/Correcta/courses/webdev-30/assignments/A01-html-profile/submissions/attempt-001"
   },
   "grading": {
-    "status": "not_graded",
-    "queuedAtDay": null,
-    "gradedAtDay": null,
-    "aiOutputDir": null,
-    "score": null,
-    "letterGrade": null,
-    "gpaValue": null
+    "status": "graded",
+    "queuedAtDay": 1,
+    "gradedAtDay": 1,
+    "aiOutputDir": "/home/runner/work/Correcta/Correcta/courses/webdev-30/assignments/A01-html-profile/ai_output/attempt-001",
+    "score": 89,
+    "letterGrade": "B+",
+    "gpaValue": 3.3
   },
   "flags": {
     "isDueSoon": false,
@@ -33,6 +33,24 @@
       "type": "status_changed",
       "message": "Status changed from locked to available.",
       "at": "2026-05-16T19:38:01.584653+00:00"
+    },
+    {
+      "day": 1,
+      "type": "submitted",
+      "message": "Detected GitHub upload and normalized it as attempt-001.",
+      "at": "2026-05-16T22:39:12.882405+00:00"
+    },
+    {
+      "day": 1,
+      "type": "grading_queued",
+      "message": "Queued attempt-001 for grading.",
+      "at": "2026-05-16T22:39:12.882408+00:00"
+    },
+    {
+      "day": 1,
+      "type": "graded",
+      "message": "Graded: 89/100 (B+).",
+      "at": "2026-05-16T22:39:12.885253+00:00"
     }
   ]
 }

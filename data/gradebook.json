@@ -1,9 +1,18 @@
 {
   "courseId": "webdev-30",
-  "assignments": [],
-  "currentAverage": null,
-  "currentLetterGrade": null,
-  "currentGpa": null,
+  "assignments": [
+    {
+      "assignmentId": "A01-html-profile",
+      "score": 89,
+      "letterGrade": "B+",
+      "gpaValue": 3.3,
+      "weight": 1,
+      "aiOutputDir": "/home/runner/work/Correcta/Correcta/courses/webdev-30/assignments/A01-html-profile/ai_output/attempt-001"
+    }
+  ],
+  "currentAverage": 89.0,
+  "currentLetterGrade": "B+",
+  "currentGpa": 3.3,
   "finalEvaluation": null,
-  "updatedAt": "2026-05-16T22:01:54.871979+00:00"
+  "updatedAt": "2026-05-16T22:39:12.885971+00:00"
 }
