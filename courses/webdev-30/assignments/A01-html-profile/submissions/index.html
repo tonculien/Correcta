@@ -1,27 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f1117" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="QuizForge" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>QuizForge</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizForge Clone Test</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="app"></main>
-  <script src="built-in-quizzes.js"></script>
-  <script src="script.js"></script>
-  <script>
-    if ("serviceWorker" in navigator && location.protocol !== "file:") {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(console.warn);
-      });
-    }
-  </script>
+    <div id="app">
+
+        <!-- ===== Library Screen ===== -->
+        <div id="screen-library" class="screen active">
+            <header>
+                <div>
+                    <h1 class="logo">QuizForge</h1>
+                    <p class="subtitle">Clone Test</p>
+                </div>
+                <label class="btn btn-import">
+                    + Import .txt
+                    <input type="file" id="file-input" accept=".txt" hidden>
+                </label>
+            </header>
+            <div id="library-grid" class="library-grid"></div>
+            <div id="library-empty" class="library-empty hidden">
+                <div class="library-empty-card">
+                    <div class="library-empty-icon">&#128218;</div>
+                    <h3>No files yet</h3>
+                    <p>Import a .txt file to get started with quizzes and flashcards.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== File Screen ===== -->
+        <div id="screen-file" class="screen hidden">
+            <header>
+                <button class="btn btn-back" id="btn-back-library">&#8592; Back</button>
+                <h2 id="file-title" class="file-title"></h2>
+            </header>
+            <div class="file-screen-body">
+                <div id="mode-buttons" class="mode-buttons"></div>
+                <div id="file-stats" class="file-stats"></div>
+            </div>
+        </div>
+
+        <!-- ===== Exam Screen ===== -->
+        <div id="screen-exam" class="screen hidden">
+            <header>
+                <button class="btn btn-back" id="btn-back-file">&#8592; Back</button>
+                <span id="exam-counter" class="screen-counter"></span>
+            </header>
+            <div id="exam-content"></div>
+        </div>
+
+        <!-- ===== Flashcard Screen ===== -->
+        <div id="screen-flashcard" class="screen hidden">
+            <header>
+                <button class="btn btn-back" id="btn-back-file-flash">&#8592; Back</button>
+                <span id="flashcard-counter" class="screen-counter"></span>
+            </header>
+            <div id="flashcard-content"></div>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
