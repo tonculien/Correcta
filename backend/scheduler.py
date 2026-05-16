@@ -69,6 +69,122 @@ def add_event(data: Dict[str, Any], day: int, event_type: str, message: str) -> 
     data.setdefault("events", []).append({"day": day, "type": event_type, "message": message, "at": utc_now()})
 
 
+
+
+def submission_items(submissions_dir: Path) -> List[Path]:
+    """Return user-uploaded items directly inside submissions/.
+
+    GitHub upload sends files straight into the selected folder. For Correcta,
+    that means a user may upload index.html directly to submissions/ instead
+    of creating submissions/attempt-001/index.html. This helper finds those
+    direct uploads and ignores attempt folders / hidden placeholder files.
+    """
+    if not submissions_dir.exists():
+        return []
+    ignored = {".gitkeep", ".DS_Store"}
+    items: List[Path] = []
+    for item in submissions_dir.iterdir():
+        if item.name in ignored or item.name.startswith("."):
+            continue
+        if item.is_dir() and item.name.startswith("attempt-"):
+            continue
+        items.append(item)
+    return items
+
+
+def attempt_dirs(submissions_dir: Path) -> List[Path]:
+    if not submissions_dir.exists():
+        return []
+    return sorted([p for p in submissions_dir.glob("attempt-*") if p.is_dir()])
+
+
+def attempt_has_files(attempt_dir: Path) -> bool:
+    return attempt_dir.exists() and any(p.is_file() for p in attempt_dir.rglob("*"))
+
+
+def next_attempt_name(submissions_dir: Path) -> str:
+    attempts = attempt_dirs(submissions_dir)
+    if not attempts:
+        return "attempt-001"
+    nums: List[int] = []
+    for attempt in attempts:
+        try:
+            nums.append(int(attempt.name.split("-")[-1]))
+        except ValueError:
+            pass
+    return f"attempt-{(max(nums) + 1 if nums else 1):03d}"
+
+
+def queue_existing_attempt(aid: str, attempt: str, current_day: int, message: str) -> None:
+    folder = assignment_folder(aid)
+    ass = load_assignment(aid)
+    data = load_assignment_data(aid)
+    target = folder / "submissions" / attempt
+    output_dir = folder / "ai_output" / attempt
+
+    data["submission"].update({
+        "hasSubmission": True,
+        "currentAttemptId": attempt,
+        "submittedAtDay": current_day,
+        "submittedAtDate": utc_now(),
+        "submissionDir": target.as_posix(),
+    })
+    data["flags"]["isLate"] = current_day > ass["dueAtDay"]
+    data["grading"].update({
+        "status": "queued",
+        "queuedAtDay": current_day,
+        "gradedAtDay": None,
+        "aiOutputDir": output_dir.as_posix(),
+        "score": None,
+        "letterGrade": None,
+        "gpaValue": None,
+    })
+    data["status"] = "submitted"
+    add_event(data, current_day, "submitted", message)
+    add_event(data, current_day, "grading_queued", f"Queued {attempt} for grading.")
+    save_assignment_data(aid, data)
+    log(f"{aid}: {message}", current_day, "submission")
+
+
+def scan_uploaded_submissions(aid: str, current_day: int) -> None:
+    """Detect GitHub-uploaded submissions and queue them for grading.
+
+    Supports two user-friendly patterns:
+    1. Upload files directly into submissions/.
+       The scheduler normalizes them into submissions/attempt-XXX/.
+    2. Upload an attempt folder manually, e.g. submissions/attempt-001/.
+       The scheduler queues the latest attempt if data.json has not recorded it.
+    """
+    folder = assignment_folder(aid)
+    submissions_dir = folder / "submissions"
+    submissions_dir.mkdir(parents=True, exist_ok=True)
+    data = load_assignment_data(aid)
+
+    direct_items = submission_items(submissions_dir)
+    if direct_items:
+        attempt = next_attempt_name(submissions_dir)
+        target = submissions_dir / attempt
+        target.mkdir(parents=True, exist_ok=True)
+        for item in direct_items:
+            dest = target / item.name
+            if dest.exists():
+                if dest.is_dir():
+                    shutil.rmtree(dest)
+                else:
+                    dest.unlink()
+            shutil.move(str(item), str(dest))
+        queue_existing_attempt(aid, attempt, current_day, f"Detected GitHub upload and normalized it as {attempt}.")
+        return
+
+    attempts = [p for p in attempt_dirs(submissions_dir) if attempt_has_files(p)]
+    if not attempts:
+        return
+    latest = attempts[-1].name
+    grading_status = data.get("grading", {}).get("status")
+    current_attempt = data.get("submission", {}).get("currentAttemptId")
+    if current_attempt != latest or grading_status in {None, "not_graded"}:
+        queue_existing_attempt(aid, latest, current_day, f"Detected existing submitted folder {latest}.")
+
 def compute_status(assignment: Dict[str, Any], data: Dict[str, Any], current_day: int) -> str:
     if data.get("grading", {}).get("status") == "graded":
         return "graded"
@@ -103,6 +219,7 @@ def daily(grader_mode: str | None = None) -> None:
     current_day = st["currentDay"]
     mode = grader_mode or st.get("graderMode", "mock")
     for aid in course()["assignments"]:
+        scan_uploaded_submissions(aid, current_day)
         update_assignment_day(aid, current_day)
     for aid in course()["assignments"]:
         data = load_assignment_data(aid)
