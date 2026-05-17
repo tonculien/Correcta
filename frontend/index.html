@@ -8,12 +8,11 @@
 </head>
 <body>
   <main class="shell">
-    <section class="hero card glow">
+    <section class="hero card glow" aria-label="Correcta course dashboard">
       <div class="hero-main">
         <p class="eyebrow">Correcta</p>
         <h1>Course Engine</h1>
         <p id="courseDescription" class="muted">Loading course...</p>
-        <button id="gearBtn" class="gear-btn" type="button" aria-label="Open course manager">⚙</button>
       </div>
 
       <div class="hero-side">
@@ -27,38 +26,34 @@
         </div>
         <button id="refreshBtn" class="ghost" type="button">Refresh</button>
       </div>
+
+      <button id="courseSettingsBtn" class="settings-button" type="button" aria-label="Open course manager">⚙</button>
     </section>
 
     <section id="finalEvaluation" class="card hidden"></section>
 
-    <section>
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Assignments</p>
-          <h2>Course Work</h2>
-        </div>
+    <section class="section-head">
+      <div>
+        <p class="eyebrow">Assignments</p>
+        <h2>Course Work</h2>
       </div>
-      <div id="assignmentGrid" class="assignment-grid"></div>
     </section>
 
-    <section class="card log-card">
-      <p class="eyebrow">System Log</p>
-      <h2>Timeline</h2>
-      <div id="systemLog" class="log-list"></div>
+    <section id="assignmentGrid" class="assignment-grid" aria-label="Assignments"></section>
+
+    <section class="section-head">
+      <div>
+        <p class="eyebrow">System Log</p>
+        <h2>Timeline</h2>
+      </div>
     </section>
+    <section id="systemLog" class="log-list"></section>
   </main>
 
   <dialog id="detailDialog" class="dialog">
     <div class="dialog-frame">
-      <button id="closeDialog" class="close" type="button">×</button>
+      <button id="closeDialog" class="close" type="button" aria-label="Close dialog">×</button>
       <div id="dialogBody"></div>
-    </div>
-  </dialog>
-
-  <dialog id="courseManagerDialog" class="dialog">
-    <div class="dialog-frame">
-      <button id="closeCourseManager" class="close" type="button">×</button>
-      <div id="courseManagerBody"></div>
     </div>
   </dialog>
 
