@@ -145,52 +145,113 @@ function currentCourseTitle() {
 }
 
 function renderCourseSettingsPanel() {
-  const body = $("courseSettingsBody");
-  if (!body || !catalog) return;
+  // Course settings are now rendered inside the main dialog, not as a small popover.
+}
 
-  const courses = catalog.installedCourses || [];
+function buildCourseManagerHTML() {
+  const courses = catalog?.installedCourses || [];
+  const removed = catalog?.removedCourses || [];
   const uploadUrl = getGitHubPackageUploadUrl();
   const actionsUrl = getGitHubCourseManagerUrl();
+  const current = courses.find(course => course.courseId === activeCourseId);
 
   if (!courses.length) {
-    body.innerHTML = `
-      <p class="muted">No course is installed yet. Import a <code>.corr</code> package to create a course.</p>
-      <div class="settings-actions">
-        <a class="button" target="_blank" rel="noopener" href="${escapeHTML(uploadUrl)}">Import .corr</a>
-        <a class="button ghost" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Open Course Manager</a>
+    return `
+      <p class="eyebrow">Correcta Course Manager</p>
+      <h2>Course Library</h2>
+      <p class="muted">No course is installed yet. Import a <code>.corr</code> package to create one.</p>
+
+      <div class="manager-grid">
+        <section class="manager-step">
+          <p class="eyebrow">Step 1</p>
+          <h3>Upload package</h3>
+          <p class="muted">Upload a <code>.corr</code> file into <code>package_inbox/</code>.</p>
+          <a class="button" target="_blank" rel="noopener" href="${escapeHTML(uploadUrl)}">Upload .corr</a>
+        </section>
+        <section class="manager-step">
+          <p class="eyebrow">Step 2</p>
+          <h3>Run import workflow</h3>
+          <p class="muted">Open Course Manager, choose <code>operation=import</code>, then enter the uploaded package path.</p>
+          <a class="button ghost" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Open Course Manager</a>
+        </section>
       </div>
     `;
-    return;
   }
 
   const selector = courses.length > 1 ? `
-    <div class="course-picker">
-      <label for="settingsCourseSelect">Active course</label>
-      <select id="settingsCourseSelect" class="select">
+    <div class="manager-field">
+      <label for="managerCourseSelect">Switch course</label>
+      <select id="managerCourseSelect" class="select">
         ${courses.map(course => {
           const selected = course.courseId === activeCourseId ? "selected" : "";
           return `<option value="${escapeHTML(course.courseId)}" ${selected}>${escapeHTML(course.title || course.courseId)}</option>`;
         }).join("")}
       </select>
     </div>
-  ` : "";
-
-  body.innerHTML = `
-    <p class="muted">Current course: <b>${escapeHTML(currentCourseTitle())}</b></p>
-    ${selector}
-    <div class="settings-actions">
-      <a class="button" target="_blank" rel="noopener" href="${escapeHTML(uploadUrl)}">Import .corr</a>
-      <a class="button danger" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Archive Course</a>
+  ` : `
+    <div class="manager-field">
+      <label>Current course</label>
+      <div class="manager-current">${escapeHTML(current?.title || activeCourseId)}</div>
     </div>
-    <p class="muted" style="margin-top:10px">Import: upload a <code>.corr</code> file to <code>package_inbox/</code>, then run Course Manager with <code>operation=import</code>.</p>
-    <p class="muted">Archive: run Course Manager with <code>operation=uninstall</code> and <code>course_id=${escapeHTML(activeCourseId)}</code>. The course folder is moved to <code>removed_courses/</code>, not deleted.</p>
   `;
 
-  const settingsSelect = $("settingsCourseSelect");
-  if (settingsSelect) {
-    settingsSelect.onchange = () => {
-      activeCourseId = settingsSelect.value;
+  const removedBlock = removed.length ? `
+    <section class="manager-step full-span">
+      <p class="eyebrow">Archive</p>
+      <h3>Archived courses</h3>
+      <div class="manager-list">
+        ${removed.slice(-5).reverse().map(course => `
+          <div class="manager-list-item">
+            <b>${escapeHTML(course.title || course.courseId)}</b>
+            <span>${escapeHTML(course.archivePath || "removed_courses/")}</span>
+          </div>
+        `).join("")}
+      </div>
+      <p class="muted">To restore one, run Course Manager with <code>operation=restore</code> and paste its archive path.</p>
+    </section>
+  ` : "";
+
+  return `
+    <p class="eyebrow">Correcta Course Manager</p>
+    <h2>Course Library</h2>
+    <p class="muted">Switch courses, import <code>.corr</code> packages, or archive the current course without deleting its data.</p>
+
+    ${selector}
+
+    <div class="manager-grid">
+      <section class="manager-step">
+        <p class="eyebrow">Import</p>
+        <h3>Add a .corr course</h3>
+        <p class="muted">Upload the package to <code>package_inbox/</code>, then run Course Manager with <code>operation=import</code>.</p>
+        <a class="button" target="_blank" rel="noopener" href="${escapeHTML(uploadUrl)}">Upload .corr</a>
+        <a class="button ghost" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Open Course Manager</a>
+      </section>
+
+      <section class="manager-step danger-zone">
+        <p class="eyebrow">Archive</p>
+        <h3>Archive current course</h3>
+        <p class="muted">Run Course Manager with <code>operation=uninstall</code> and this course id:</p>
+        <pre class="copy-code">${escapeHTML(activeCourseId)}</pre>
+        <p class="muted">This moves the full folder to <code>removed_courses/</code>. Submissions, grades, feedback, and runtime data are kept.</p>
+        <a class="button danger" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Open Archive Workflow</a>
+      </section>
+
+      ${removedBlock}
+    </div>
+  `;
+}
+
+function showCourseManagerDialog() {
+  if (!catalog) return;
+  $("dialogBody").innerHTML = buildCourseManagerHTML();
+  $("detailDialog").showModal();
+
+  const managerSelect = $("managerCourseSelect");
+  if (managerSelect) {
+    managerSelect.onchange = () => {
+      activeCourseId = managerSelect.value;
       setCourseInUrl(activeCourseId);
+      $("detailDialog").close();
       loadApp();
     };
   }
@@ -358,19 +419,11 @@ function showNotice(html) {
 
 function setupCourseManagerButtons() {
   const settingsBtn = $("courseSettingsBtn");
-  const panel = $("courseSettingsPanel");
-  if (!settingsBtn || !panel) return;
+  if (!settingsBtn) return;
 
-  settingsBtn.addEventListener("click", (event) => {
-    event.stopPropagation();
-    renderCourseSettingsPanel();
-    panel.classList.toggle("hidden");
-  });
-
-  panel.addEventListener("click", (event) => event.stopPropagation());
-
-  document.addEventListener("click", () => {
-    panel.classList.add("hidden");
+  settingsBtn.addEventListener("click", async () => {
+    if (!catalog) await loadCatalog();
+    showCourseManagerDialog();
   });
 }
 
