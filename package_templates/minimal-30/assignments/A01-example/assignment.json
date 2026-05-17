@@ -1,0 +1,50 @@
+{
+  "assignmentId": "A01-example",
+  "courseId": "minimal-30",
+  "title": "Example Submission",
+  "appearsAtDay": 1,
+  "dueAtDay": 5,
+  "summary": "Submit a small text file to prove the course package works.",
+  "knowledgeRefs": ["K01-start"],
+  "studentInstructions": [
+    "Create a file named response.txt.",
+    "Write two or three sentences explaining what this course is testing.",
+    "Submit the file through the assignment submission folder."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": ["response.txt"],
+    "optionalFiles": []
+  },
+  "rubric": [
+    {
+      "criterion": "Required file",
+      "points": 40,
+      "description": "response.txt is submitted."
+    },
+    {
+      "criterion": "Content relevance",
+      "points": 40,
+      "description": "The response explains the purpose of the test course."
+    },
+    {
+      "criterion": "Clarity",
+      "points": 20,
+      "description": "The writing is clear and readable."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Every deduction must be justified."
+  ]
+}

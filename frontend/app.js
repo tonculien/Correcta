@@ -1,5 +1,8 @@
-const COURSE_ROOT = "../courses/webdev-30";
 const DATA_ROOT = "../data";
+const CATALOG_PATH = "../courses/catalog.json";
+
+let activeCourseId = "webdev-30";
+let catalog = null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -25,6 +28,10 @@ async function getText(path, fallback = "") {
   }
 }
 
+function courseRoot(courseId = activeCourseId) {
+  return `../courses/${courseId}`;
+}
+
 function statusClass(status) {
   return String(status || "locked").toLowerCase();
 }
@@ -38,26 +45,41 @@ function escapeHTML(value) {
     .replaceAll("'", "&#039;");
 }
 
-
-function getGitHubSubmitUrl(assignmentId) {
-  // GitHub Pages URL normally looks like:
-  // https://<owner>.github.io/<repo>/frontend/
+function getRepoInfo() {
   const host = window.location.hostname;
   const parts = window.location.pathname.split('/').filter(Boolean);
-
   let owner = 'tonculien';
   let repo = 'Correcta';
-
   if (host.endsWith('.github.io')) {
     owner = host.replace('.github.io', '');
     if (parts.length > 0) repo = parts[0];
   }
+  return { owner, repo };
+}
 
-  return `https://github.com/${owner}/${repo}/upload/main/courses/webdev-30/assignments/${assignmentId}/submissions`;
+function getGitHubSubmitUrl(assignmentId) {
+  const { owner, repo } = getRepoInfo();
+  return `https://github.com/${owner}/${repo}/upload/main/courses/${activeCourseId}/assignments/${assignmentId}/submissions`;
+}
+
+function getGitHubPackageUploadUrl() {
+  const { owner, repo } = getRepoInfo();
+  return `https://github.com/${owner}/${repo}/upload/main/package_inbox`;
+}
+
+function getGitHubCourseManagerUrl() {
+  const { owner, repo } = getRepoInfo();
+  return `https://github.com/${owner}/${repo}/actions/workflows/correcta-course-manager.yml`;
 }
 
 function canSubmitAssignment(status) {
-  return ['available', 'due_soon', 'overdue'].includes(String(status || '').toLowerCase());
+  return ['available', 'due_soon', 'overdue', 'submitted', 'graded'].includes(String(status || '').toLowerCase());
+}
+
+function submitLabel(status) {
+  const s = String(status || '').toLowerCase();
+  if (s === 'submitted' || s === 'graded') return 'Resubmit on GitHub';
+  return 'Submit on GitHub';
 }
 
 function markdownLite(md) {
@@ -69,28 +91,79 @@ function markdownLite(md) {
     .replace(/\n\n/g, "<br><br>");
 }
 
+function getCourseFromUrl() {
+  return new URLSearchParams(window.location.search).get("course");
+}
+
+function setCourseInUrl(courseId) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("course", courseId);
+  window.history.replaceState({}, "", url.toString());
+}
+
+async function loadCatalog() {
+  const fallback = {
+    activeCourseId: "webdev-30",
+    installedCourses: [
+      {
+        courseId: "webdev-30",
+        title: "30-Day Web Development",
+        path: "courses/webdev-30",
+        status: "active"
+      }
+    ],
+    removedCourses: []
+  };
+  catalog = await getJSON(CATALOG_PATH, fallback);
+  activeCourseId = getCourseFromUrl() || catalog.activeCourseId || fallback.activeCourseId;
+  renderCourseSelector();
+}
+
+function renderCourseSelector() {
+  const select = $("courseSelect");
+  if (!select || !catalog) return;
+  const courses = catalog.installedCourses || [];
+  select.innerHTML = courses.map(course => {
+    const selected = course.courseId === activeCourseId ? "selected" : "";
+    return `<option value="${escapeHTML(course.courseId)}" ${selected}>${escapeHTML(course.title || course.courseId)}</option>`;
+  }).join("");
+  select.onchange = () => {
+    activeCourseId = select.value;
+    setCourseInUrl(activeCourseId);
+    loadApp();
+  };
+}
+
 async function loadApp() {
-  const course = await getJSON(`${COURSE_ROOT}/course.json`, null);
-  const state = await getJSON(`${DATA_ROOT}/course_state.json`, { currentDay: 1, durationDays: 30, mode: "github" });
-  const gradebook = await getJSON(`${DATA_ROOT}/gradebook.json`, { assignments: [] });
-  const logs = await getJSON(`${DATA_ROOT}/system_log.json`, []);
+  if (!catalog) await loadCatalog();
+
+  const root = courseRoot(activeCourseId);
+  const course = await getJSON(`${root}/course.json`, null);
+  const state = await getJSON(`${root}/runtime/course_state.json`, null)
+    || await getJSON(`${DATA_ROOT}/course_state.json`, { currentDay: 1, durationDays: 30, mode: "github" });
+  const gradebook = await getJSON(`${root}/runtime/gradebook.json`, null)
+    || await getJSON(`${DATA_ROOT}/gradebook.json`, { assignments: [] });
+  const logs = await getJSON(`${root}/runtime/system_log.json`, null)
+    || await getJSON(`${DATA_ROOT}/system_log.json`, []);
+
   if (!course) {
-    $("courseDescription").textContent = "Could not load course.json. If opened as file://, use GitHub Pages or a local static preview.";
+    $("courseDescription").textContent = `Could not load course.json for ${activeCourseId}.`;
+    $("assignmentGrid").innerHTML = `<article class="assignment-card"><h3>Course not found</h3><p class="muted">Check courses/catalog.json and the course folder.</p></article>`;
     return;
   }
 
   $("courseDescription").textContent = course.description || course.title;
   $("dayLabel").textContent = `Day ${state.currentDay} / ${state.durationDays || course.durationDays}`;
-  $("modeLabel").textContent = `Mode: ${state.mode || "github"} · Grader: ${state.graderMode || "mock"}`;
+  $("modeLabel").textContent = `Mode: ${state.mode || "github"} · Grader: ${state.graderMode || course.defaultGrader || "mock"}`;
   $("averageValue").textContent = gradebook.currentAverage == null ? "--" : `${gradebook.currentAverage}%`;
   $("gpaValue").textContent = gradebook.currentGpa == null ? "GPA --" : `${gradebook.currentLetterGrade} · GPA ${gradebook.currentGpa}`;
 
   renderFinal(gradebook.finalEvaluation);
 
   const assignments = [];
-  for (const aid of course.assignments) {
-    const assignment = await getJSON(`${COURSE_ROOT}/assignments/${aid}/assignment.json`, null);
-    const data = await getJSON(`${COURSE_ROOT}/assignments/${aid}/data.json`, null);
+  for (const aid of course.assignments || []) {
+    const assignment = await getJSON(`${root}/assignments/${aid}/assignment.json`, null);
+    const data = await getJSON(`${root}/assignments/${aid}/data.json`, null);
     if (assignment && data) assignments.push({ assignment, data });
   }
   renderAssignments(assignments);
@@ -118,6 +191,11 @@ function renderFinal(finalEvaluation) {
 function renderAssignments(items) {
   const grid = $("assignmentGrid");
   grid.innerHTML = "";
+  if (!items.length) {
+    grid.innerHTML = `<article class="assignment-card"><h3>No assignments</h3><p class="muted">This course has no assignment folders yet.</p></article>`;
+    return;
+  }
+
   for (const item of items) {
     const { assignment, data } = item;
     const score = data.grading?.score;
@@ -149,9 +227,9 @@ function renderAssignments(items) {
 
 function renderLogs(logs) {
   const el = $("systemLog");
-  const recent = [...logs].reverse().slice(0, 80);
+  const recent = [...(logs || [])].reverse().slice(0, 80);
   if (!recent.length) {
-    el.innerHTML = `<div class="log-item">No logs yet. Run the scheduler or GitHub Actions. Tiny silence goblin.</div>`;
+    el.innerHTML = `<div class="log-item">No logs yet. Run GitHub Actions. Tiny silence goblin.</div>`;
     return;
   }
   el.innerHTML = recent.map(log => `
@@ -160,7 +238,7 @@ function renderLogs(logs) {
 }
 
 function showDetail(assignment, data) {
-  const rubricRows = assignment.rubric.map(r => `
+  const rubricRows = (assignment.rubric || []).map(r => `
     <tr><td>${escapeHTML(r.criterion)}</td><td>${escapeHTML(r.points)}</td><td>${escapeHTML(r.description)}</td></tr>
   `).join("");
   const submitUrl = getGitHubSubmitUrl(assignment.assignmentId);
@@ -168,11 +246,12 @@ function showDetail(assignment, data) {
     <div class="submit-panel">
       <div>
         <p class="eyebrow">Submission</p>
-        <h3>Ready to submit?</h3>
-        <p class="muted">This opens the exact GitHub upload folder for this assignment.</p>
+        <h3>${escapeHTML(submitLabel(data.status))}</h3>
+        <p class="muted">This opens the exact GitHub upload folder for this assignment. After uploading, wait for Actions to finish, then press Refresh here.</p>
       </div>
-      <a class="button submit-button" target="_blank" rel="noopener" href="${escapeHTML(submitUrl)}">Submit on GitHub</a>
+      <a class="button submit-button" target="_blank" rel="noopener" href="${escapeHTML(submitUrl)}" id="submitLink">${escapeHTML(submitLabel(data.status))}</a>
     </div>
+    <div class="notice soft">If you already uploaded your submission on GitHub, come back here and press Refresh after Actions finishes grading.</div>
   ` : "";
   $("dialogBody").innerHTML = `
     <p class="eyebrow">${escapeHTML(assignment.assignmentId)}</p>
@@ -180,9 +259,9 @@ function showDetail(assignment, data) {
     <p class="muted">${escapeHTML(assignment.summary)}</p>
     ${submitBlock}
     <h3>Instructions</h3>
-    <ul>${assignment.studentInstructions.map(x => `<li>${escapeHTML(x)}</li>`).join("")}</ul>
+    <ul>${(assignment.studentInstructions || []).map(x => `<li>${escapeHTML(x)}</li>`).join("")}</ul>
     <h3>Required Files</h3>
-    <ul>${assignment.submissionRequirements.requiredFiles.map(x => `<li>${escapeHTML(x)}</li>`).join("")}</ul>
+    <ul>${(assignment.submissionRequirements?.requiredFiles || []).map(x => `<li>${escapeHTML(x)}</li>`).join("")}</ul>
     <h3>Rubric</h3>
     <table class="rubric-table"><thead><tr><th>Criterion</th><th>Points</th><th>Description</th></tr></thead><tbody>${rubricRows}</tbody></table>
     <h3>Runtime Data</h3>
@@ -192,7 +271,8 @@ function showDetail(assignment, data) {
 }
 
 async function showFeedback(assignment, data) {
-  const out = data.grading.aiOutputDir.replace(/^.*courses\/webdev-30\//, `${COURSE_ROOT}/`);
+  let out = data.grading.aiOutputDir || "";
+  out = out.replace(/^.*courses\//, "../courses/");
   const grade = await getJSON(`${out}/grade.json`, null);
   const feedback = await getText(`${out}/feedback.md`, "No feedback.md found.");
   const notes = await getText(`${out}/notes.md`, "No notes.md found.");
@@ -207,6 +287,48 @@ async function showFeedback(assignment, data) {
   $("detailDialog").showModal();
 }
 
-$("refreshBtn").addEventListener("click", loadApp);
-$("closeDialog").addEventListener("click", () => $("detailDialog").close());
+function showNotice(html) {
+  const el = $("courseManagerNotice");
+  el.classList.remove("hidden");
+  el.innerHTML = html;
+}
+
+function setupCourseManagerButtons() {
+  $("importCourseBtn")?.addEventListener("click", () => {
+    const uploadUrl = getGitHubPackageUploadUrl();
+    const actionsUrl = getGitHubCourseManagerUrl();
+    showNotice(`
+      <b>Import flow:</b>
+      <ol>
+        <li>Upload your <code>.corr</code> file into <code>package_inbox/</code>.</li>
+        <li>Open <b>Correcta Course Manager</b> in GitHub Actions.</li>
+        <li>Run workflow with <code>operation=import</code> and <code>package_path=package_inbox/YOUR_FILE.corr</code>.</li>
+      </ol>
+      <div class="notice-actions">
+        <a class="button" target="_blank" rel="noopener" href="${escapeHTML(uploadUrl)}">Upload .corr</a>
+        <a class="button ghost" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Open Course Manager</a>
+      </div>
+    `);
+  });
+
+  $("uninstallCourseBtn")?.addEventListener("click", () => {
+    const actionsUrl = getGitHubCourseManagerUrl();
+    showNotice(`
+      <b>Uninstall flow:</b>
+      <ol>
+        <li>Open <b>Correcta Course Manager</b> in GitHub Actions.</li>
+        <li>Run workflow with <code>operation=uninstall</code>.</li>
+        <li>Use <code>course_id=${escapeHTML(activeCourseId)}</code>.</li>
+      </ol>
+      <p class="muted">Uninstall archives the full course folder into <code>removed_courses/</code>, including submissions, feedback, grades, and unfinished progress.</p>
+      <div class="notice-actions">
+        <a class="button danger" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Open Course Manager</a>
+      </div>
+    `);
+  });
+}
+
+$("refreshBtn")?.addEventListener("click", loadApp);
+$("closeDialog")?.addEventListener("click", () => $("detailDialog").close());
+setupCourseManagerButtons();
 loadApp();

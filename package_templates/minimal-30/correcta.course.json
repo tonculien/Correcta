@@ -1,0 +1,32 @@
+{
+  "packageType": "correcta-course",
+  "formatVersion": "1.0",
+  "courseId": "minimal-30",
+  "title": "Minimal 30-Day Course",
+  "description": "A tiny demo course package for testing Correcta import.",
+  "durationDays": 30,
+  "author": "Correcta",
+  "language": "en",
+  "entry": {
+    "syllabus": "syllabus.md",
+    "grading": "grading.json",
+    "knowledgeRoot": "knowledge",
+    "assignmentRoot": "assignments"
+  },
+  "knowledge": [
+    {
+      "id": "K01-start",
+      "title": "Course Start",
+      "path": "knowledge/K01-start.md",
+      "appearsAtDay": 1
+    }
+  ],
+  "assignments": [
+    {
+      "assignmentId": "A01-example",
+      "path": "assignments/A01-example/assignment.json",
+      "appearsAtDay": 1,
+      "dueAtDay": 5
+    }
+  ]
+}

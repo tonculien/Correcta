@@ -1,0 +1,12 @@
+{
+  "activeCourseId": "webdev-30",
+  "installedCourses": [
+    {
+      "courseId": "webdev-30",
+      "title": "30-Day Web Development",
+      "path": "courses/webdev-30",
+      "status": "active"
+    }
+  ],
+  "removedCourses": []
+}
