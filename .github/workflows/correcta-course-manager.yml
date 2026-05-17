@@ -1,0 +1,73 @@
+name: Correcta Course Manager
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "Course manager operation"
+        required: true
+        default: "list"
+        type: choice
+        options:
+          - list
+          - validate
+          - import
+          - uninstall
+          - restore
+      package_path:
+        description: "Path to .corr package for validate/import"
+        required: false
+        default: ""
+      course_id:
+        description: "Course ID for uninstall"
+        required: false
+        default: ""
+      archive_path:
+        description: "Archive path for restore"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: correcta-course-manager-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  manage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Course Manager
+        run: |
+          if [ "${{ github.event.inputs.operation }}" = "list" ]; then
+            python backend/course_manager.py list
+          elif [ "${{ github.event.inputs.operation }}" = "validate" ]; then
+            python backend/course_manager.py validate "${{ github.event.inputs.package_path }}"
+          elif [ "${{ github.event.inputs.operation }}" = "import" ]; then
+            python backend/course_manager.py import "${{ github.event.inputs.package_path }}"
+          elif [ "${{ github.event.inputs.operation }}" = "uninstall" ]; then
+            python backend/course_manager.py uninstall "${{ github.event.inputs.course_id }}"
+          elif [ "${{ github.event.inputs.operation }}" = "restore" ]; then
+            python backend/course_manager.py restore "${{ github.event.inputs.archive_path }}"
+          else
+            echo "Unknown operation"
+            exit 1
+          fi
+
+      - name: Commit Course Manager changes
+        run: |
+          git config user.name "correcta-bot"
+          git config user.email "correcta-bot@users.noreply.github.com"
+          git add courses data removed_courses package_inbox || true
+          git commit -m "Correcta course manager update" || echo "No changes to commit"
+          git push
