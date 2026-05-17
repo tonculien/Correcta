@@ -9,11 +9,13 @@
 <body>
   <main class="shell">
     <section class="hero card glow">
-      <div>
+      <div class="hero-main">
         <p class="eyebrow">Correcta</p>
         <h1>Course Engine</h1>
         <p id="courseDescription" class="muted">Loading course...</p>
+        <button id="gearBtn" class="gear-btn" type="button" aria-label="Open course manager">⚙</button>
       </div>
+
       <div class="hero-side">
         <div class="stat">
           <span id="dayLabel">Day -- / --</span>
@@ -23,41 +25,40 @@
           <span id="averageValue">--</span>
           <small id="gpaValue">GPA --</small>
         </div>
-        <button id="refreshBtn" class="button ghost">Refresh</button>
-      </div>
-      <div class="course-settings">
-        <button id="courseSettingsBtn" class="settings-button" aria-label="Course settings" title="Course settings">⚙</button>
+        <button id="refreshBtn" class="ghost" type="button">Refresh</button>
       </div>
     </section>
-
-    <div id="courseManagerNotice" class="notice hidden floating-notice"></div>
 
     <section id="finalEvaluation" class="card hidden"></section>
 
-    <section class="section-head">
-      <div>
-        <p class="eyebrow">Assignments</p>
-        <h2>Course Work</h2>
-      </div>
-    </section>
-
-    <section id="assignmentGrid" class="assignment-grid"></section>
-
-    <section class="card">
+    <section>
       <div class="section-head">
         <div>
-          <p class="eyebrow">System Log</p>
-          <h2>Timeline</h2>
+          <p class="eyebrow">Assignments</p>
+          <h2>Course Work</h2>
         </div>
       </div>
+      <div id="assignmentGrid" class="assignment-grid"></div>
+    </section>
+
+    <section class="card log-card">
+      <p class="eyebrow">System Log</p>
+      <h2>Timeline</h2>
       <div id="systemLog" class="log-list"></div>
     </section>
   </main>
 
   <dialog id="detailDialog" class="dialog">
     <div class="dialog-frame">
-      <button id="closeDialog" class="close" aria-label="Close">×</button>
+      <button id="closeDialog" class="close" type="button">×</button>
       <div id="dialogBody"></div>
+    </div>
+  </dialog>
+
+  <dialog id="courseManagerDialog" class="dialog">
+    <div class="dialog-frame">
+      <button id="closeCourseManager" class="close" type="button">×</button>
+      <div id="courseManagerBody"></div>
     </div>
   </dialog>
 
