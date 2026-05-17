@@ -117,6 +117,7 @@ async function loadCatalog() {
   catalog = await getJSON(CATALOG_PATH, fallback);
   activeCourseId = getCourseFromUrl() || catalog.activeCourseId || fallback.activeCourseId;
   renderCourseSelector();
+  renderCourseSettingsPanel();
 }
 
 function renderCourseSelector() {
@@ -132,6 +133,67 @@ function renderCourseSelector() {
     setCourseInUrl(activeCourseId);
     loadApp();
   };
+}
+
+function hasInstalledCourses() {
+  return Boolean(catalog && Array.isArray(catalog.installedCourses) && catalog.installedCourses.length > 0);
+}
+
+function currentCourseTitle() {
+  const current = (catalog?.installedCourses || []).find(course => course.courseId === activeCourseId);
+  return current?.title || activeCourseId;
+}
+
+function renderCourseSettingsPanel() {
+  const body = $("courseSettingsBody");
+  if (!body || !catalog) return;
+
+  const courses = catalog.installedCourses || [];
+  const uploadUrl = getGitHubPackageUploadUrl();
+  const actionsUrl = getGitHubCourseManagerUrl();
+
+  if (!courses.length) {
+    body.innerHTML = `
+      <p class="muted">No course is installed yet. Import a <code>.corr</code> package to create a course.</p>
+      <div class="settings-actions">
+        <a class="button" target="_blank" rel="noopener" href="${escapeHTML(uploadUrl)}">Import .corr</a>
+        <a class="button ghost" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Open Course Manager</a>
+      </div>
+    `;
+    return;
+  }
+
+  const selector = courses.length > 1 ? `
+    <div class="course-picker">
+      <label for="settingsCourseSelect">Active course</label>
+      <select id="settingsCourseSelect" class="select">
+        ${courses.map(course => {
+          const selected = course.courseId === activeCourseId ? "selected" : "";
+          return `<option value="${escapeHTML(course.courseId)}" ${selected}>${escapeHTML(course.title || course.courseId)}</option>`;
+        }).join("")}
+      </select>
+    </div>
+  ` : "";
+
+  body.innerHTML = `
+    <p class="muted">Current course: <b>${escapeHTML(currentCourseTitle())}</b></p>
+    ${selector}
+    <div class="settings-actions">
+      <a class="button" target="_blank" rel="noopener" href="${escapeHTML(uploadUrl)}">Import .corr</a>
+      <a class="button danger" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Archive Course</a>
+    </div>
+    <p class="muted" style="margin-top:10px">Import: upload a <code>.corr</code> file to <code>package_inbox/</code>, then run Course Manager with <code>operation=import</code>.</p>
+    <p class="muted">Archive: run Course Manager with <code>operation=uninstall</code> and <code>course_id=${escapeHTML(activeCourseId)}</code>. The course folder is moved to <code>removed_courses/</code>, not deleted.</p>
+  `;
+
+  const settingsSelect = $("settingsCourseSelect");
+  if (settingsSelect) {
+    settingsSelect.onchange = () => {
+      activeCourseId = settingsSelect.value;
+      setCourseInUrl(activeCourseId);
+      loadApp();
+    };
+  }
 }
 
 async function loadApp() {
@@ -168,6 +230,7 @@ async function loadApp() {
   }
   renderAssignments(assignments);
   renderLogs(logs);
+  renderCourseSettingsPanel();
 }
 
 function renderFinal(finalEvaluation) {
@@ -294,37 +357,20 @@ function showNotice(html) {
 }
 
 function setupCourseManagerButtons() {
-  $("importCourseBtn")?.addEventListener("click", () => {
-    const uploadUrl = getGitHubPackageUploadUrl();
-    const actionsUrl = getGitHubCourseManagerUrl();
-    showNotice(`
-      <b>Import flow:</b>
-      <ol>
-        <li>Upload your <code>.corr</code> file into <code>package_inbox/</code>.</li>
-        <li>Open <b>Correcta Course Manager</b> in GitHub Actions.</li>
-        <li>Run workflow with <code>operation=import</code> and <code>package_path=package_inbox/YOUR_FILE.corr</code>.</li>
-      </ol>
-      <div class="notice-actions">
-        <a class="button" target="_blank" rel="noopener" href="${escapeHTML(uploadUrl)}">Upload .corr</a>
-        <a class="button ghost" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Open Course Manager</a>
-      </div>
-    `);
+  const settingsBtn = $("courseSettingsBtn");
+  const panel = $("courseSettingsPanel");
+  if (!settingsBtn || !panel) return;
+
+  settingsBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    renderCourseSettingsPanel();
+    panel.classList.toggle("hidden");
   });
 
-  $("uninstallCourseBtn")?.addEventListener("click", () => {
-    const actionsUrl = getGitHubCourseManagerUrl();
-    showNotice(`
-      <b>Uninstall flow:</b>
-      <ol>
-        <li>Open <b>Correcta Course Manager</b> in GitHub Actions.</li>
-        <li>Run workflow with <code>operation=uninstall</code>.</li>
-        <li>Use <code>course_id=${escapeHTML(activeCourseId)}</code>.</li>
-      </ol>
-      <p class="muted">Uninstall archives the full course folder into <code>removed_courses/</code>, including submissions, feedback, grades, and unfinished progress.</p>
-      <div class="notice-actions">
-        <a class="button danger" target="_blank" rel="noopener" href="${escapeHTML(actionsUrl)}">Open Course Manager</a>
-      </div>
-    `);
+  panel.addEventListener("click", (event) => event.stopPropagation());
+
+  document.addEventListener("click", () => {
+    panel.classList.add("hidden");
   });
 }
 

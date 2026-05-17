@@ -288,3 +288,79 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 20px 0; }
   .course-controls > * { width: 100%; }
   .meta { grid-template-columns: 1fr; }
 }
+
+.course-settings {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  z-index: 3;
+}
+
+.settings-button {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--text);
+  border: 1px solid rgba(139,211,255,.24);
+  background: rgba(255,255,255,.055);
+  box-shadow: 0 10px 30px rgba(0,0,0,.22);
+  opacity: .78;
+}
+.settings-button:hover {
+  opacity: 1;
+  background: rgba(139,211,255,.12);
+  border-color: rgba(139,211,255,.45);
+}
+
+.settings-panel {
+  position: absolute;
+  left: 0;
+  bottom: 52px;
+  width: min(340px, calc(100vw - 44px));
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgba(16,20,31,.96);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+.settings-panel-head h3 { margin: 0 0 8px; }
+.settings-panel .muted { font-size: 14px; }
+.settings-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.settings-actions .button { width: 100%; }
+.course-picker {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+.course-picker label {
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.floating-notice {
+  margin: -4px 0 18px;
+}
+
+@media (max-width: 760px) {
+  .course-settings {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .settings-button { width: 100%; border-radius: 15px; }
+  .settings-panel {
+    position: static;
+    width: 100%;
+    margin-top: 10px;
+  }
+}

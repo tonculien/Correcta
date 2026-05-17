@@ -5,10 +5,9 @@ import os
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 ROOT = Path(__file__).resolve().parents[1]
-COURSE_DIR = ROOT / "courses" / "webdev-30"
 SCALE = [
     (93, "A", 4.0), (90, "A-", 3.7), (87, "B+", 3.3), (83, "B", 3.0),
     (80, "B-", 2.7), (77, "C+", 2.3), (73, "C", 2.0), (70, "C-", 1.7),
@@ -16,7 +15,7 @@ SCALE = [
 ]
 
 
-def letter_for(score: float):
+def letter_for(score: float) -> Tuple[str, float]:
     for minimum, letter, gpa in SCALE:
         if score >= minimum:
             return letter, gpa
@@ -32,15 +31,9 @@ def write_json(path: Path, data: Any) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
-def list_submission_files(submission_dir: Path) -> List[Path]:
-    if not submission_dir.exists():
-        return []
-    return [p for p in submission_dir.rglob("*") if p.is_file()]
-
-
 def required_missing(assignment: Dict[str, Any], submission_dir: Path) -> List[str]:
-    missing = []
-    for required in assignment["submissionRequirements"].get("requiredFiles", []):
+    missing: List[str] = []
+    for required in assignment.get("submissionRequirements", {}).get("requiredFiles", []):
         if not (submission_dir / required).exists():
             missing.append(required)
     return missing
@@ -49,38 +42,41 @@ def required_missing(assignment: Dict[str, Any], submission_dir: Path) -> List[s
 def mock_grade(assignment: Dict[str, Any], assignment_data: Dict[str, Any], submission_dir: Path, output_dir: Path, current_day: int) -> Dict[str, Any]:
     missing = required_missing(assignment, submission_dir)
     base = 92 - (len(missing) * 18)
-    # deterministic variation by assignment id, because chaos should be documented, not random
     variation = (sum(ord(c) for c in assignment["assignmentId"]) % 7) - 3
     score_before = max(0, min(100, base + variation))
 
-    late_days = max(0, (assignment_data.get("submission", {}).get("submittedAtDay") or current_day) - assignment["dueAtDay"])
+    submitted_day = assignment_data.get("submission", {}).get("submittedAtDay") or current_day
+    late_days = max(0, submitted_day - assignment.get("dueAtDay", current_day))
     late_policy = assignment.get("latePolicy", {})
     late_penalty = 0
     if late_days and late_policy.get("allowLate", False):
         late_penalty = min(late_days, late_policy.get("maxLateDays", late_days)) * late_policy.get("penaltyPerDay", 0)
     elif late_days:
         late_penalty = 100
+
     final_score = max(0, score_before - late_penalty)
     letter, gpa = letter_for(final_score)
 
+    rubric = assignment.get("rubric", [])
+    total_points = sum(item.get("points", 0) for item in rubric) or 100
     rubric_breakdown = []
-    total_points = sum(item["points"] for item in assignment["rubric"])
-    for item in assignment["rubric"]:
-        proportional = item["points"] * (score_before / total_points)
-        earned = round(max(0, min(item["points"], proportional)), 1)
+    for index, item in enumerate(rubric):
+        max_points = item.get("points", 0)
+        proportional = max_points * (score_before / total_points)
+        earned = round(max(0, min(max_points, proportional)), 1)
         reason = "Mock grading: requirement appears acceptable for prototype testing."
-        if missing and item is assignment["rubric"][0]:
+        if missing and index == 0:
             reason = f"Missing required files detected: {', '.join(missing)}."
         rubric_breakdown.append({
-            "criterion": item["criterion"],
-            "maxPoints": item["points"],
+            "criterion": item.get("criterion", "Criterion"),
+            "maxPoints": max_points,
             "earnedPoints": earned,
             "reason": reason,
         })
 
     grade = {
         "assignmentId": assignment["assignmentId"],
-        "attemptId": assignment_data["submission"].get("currentAttemptId"),
+        "attemptId": assignment_data.get("submission", {}).get("currentAttemptId"),
         "scoreBeforeLatePenalty": score_before,
         "latePenalty": late_penalty,
         "finalScore": final_score,
@@ -94,6 +90,7 @@ def mock_grade(assignment: Dict[str, Any], assignment_data: Dict[str, Any], subm
         "deepNotes": "This is prototype output. Replace mock mode with opencode/api mode when the file workflow is stable.",
         "recommendedFixes": ["Review the rubric.", "Check required files.", "Improve clarity and consistency."],
     }
+
     output_dir.mkdir(parents=True, exist_ok=True)
     write_json(output_dir / "grade.json", grade)
     (output_dir / "feedback.md").write_text(
@@ -108,20 +105,31 @@ def mock_grade(assignment: Dict[str, Any], assignment_data: Dict[str, Any], subm
 
 
 def build_opencode_prompt(assignment_path: Path, data_path: Path, submission_dir: Path, output_dir: Path) -> str:
-    template = (ROOT / "prompts" / "grading_prompt_template.md").read_text(encoding="utf-8")
-    return template.format(
-        assignment_path=assignment_path.as_posix(),
-        data_path=data_path.as_posix(),
-        submission_dir=submission_dir.as_posix(),
-        output_dir=output_dir.as_posix(),
-    )
+    template_path = ROOT / "prompts" / "grading_prompt_template.md"
+    if template_path.exists():
+        template = template_path.read_text(encoding="utf-8")
+        return template.format(
+            assignment_path=assignment_path.as_posix(),
+            data_path=data_path.as_posix(),
+            submission_dir=submission_dir.as_posix(),
+            output_dir=output_dir.as_posix(),
+        )
+    return f"""
+You are the AI grading engine for Correcta.
+Read the assignment file: {assignment_path.as_posix()}
+Read the assignment data file: {data_path.as_posix()}
+Read submitted files from: {submission_dir.as_posix()}
+Write output ONLY to: {output_dir.as_posix()}
+Create exactly: grade.json, feedback.md, notes.md.
+Use only the rubric inside assignment.json.
+Do not modify any other files.
+""".strip()
 
 
 def run_opencode(assignment_path: Path, data_path: Path, submission_dir: Path, output_dir: Path) -> Dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
     prompt = build_opencode_prompt(assignment_path, data_path, submission_dir, output_dir)
-    prompt_file = output_dir / "_prompt.md"
-    prompt_file.write_text(prompt, encoding="utf-8")
+    (output_dir / "_prompt.md").write_text(prompt, encoding="utf-8")
 
     cmd = os.environ.get("CORRECTA_OPENCODE_CMD", "opencode")
     result = subprocess.run(
@@ -141,18 +149,18 @@ def run_opencode(assignment_path: Path, data_path: Path, submission_dir: Path, o
     return read_json(grade_path)
 
 
-def grade_assignment(assignment_id: str, current_day: int, mode: str = "mock") -> Dict[str, Any]:
-    folder = COURSE_DIR / "assignments" / assignment_id
+def grade_assignment(course_dir: Path, assignment_id: str, current_day: int, mode: str = "mock") -> Dict[str, Any]:
+    folder = course_dir / "assignments" / assignment_id
     assignment_path = folder / "assignment.json"
     data_path = folder / "data.json"
     assignment = read_json(assignment_path)
     assignment_data = read_json(data_path)
-    attempt = assignment_data["submission"].get("currentAttemptId")
+    attempt = assignment_data.get("submission", {}).get("currentAttemptId")
     if not attempt:
         raise ValueError(f"{assignment_id} has no current attempt")
+
     submission_dir = folder / "submissions" / attempt
     output_dir = folder / "ai_output" / attempt
-
     if mode == "opencode":
         return run_opencode(assignment_path, data_path, submission_dir, output_dir)
     return mock_grade(assignment, assignment_data, submission_dir, output_dir, current_day)

@@ -25,23 +25,19 @@
         </div>
         <button id="refreshBtn" class="button ghost">Refresh</button>
       </div>
-    </section>
-
-    <section class="card course-manager">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Course Library</p>
-          <h2>Installed Courses</h2>
-          <p class="muted">Switch courses, import .corr packages, or archive a course without deleting its data.</p>
-        </div>
-        <div class="course-controls">
-          <select id="courseSelect" class="select"></select>
-          <button id="importCourseBtn" class="button">Import .corr</button>
-          <button id="uninstallCourseBtn" class="button danger ghost">Uninstall Course</button>
+      <div class="course-settings">
+        <button id="courseSettingsBtn" class="settings-button" aria-label="Course settings" title="Course settings">⚙</button>
+        <div id="courseSettingsPanel" class="settings-panel hidden">
+          <div class="settings-panel-head">
+            <p class="eyebrow">Course Settings</p>
+            <h3>Manage Course</h3>
+          </div>
+          <div id="courseSettingsBody"></div>
         </div>
       </div>
-      <div id="courseManagerNotice" class="notice hidden"></div>
     </section>
+
+    <div id="courseManagerNotice" class="notice hidden floating-notice"></div>
 
     <section id="finalEvaluation" class="card hidden"></section>
 
