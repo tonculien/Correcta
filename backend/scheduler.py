@@ -1,3 +1,18 @@
+#!/usr/bin/env python3
+"""Correcta daily scheduler.
+
+This script is intentionally file-based because Correcta is GitHub-first:
+- courses/<courseId>/ contains course.json and assignments/
+- each assignment folder contains assignment.json, data.json, submissions/, ai_output/
+- GitHub Actions runs this script and commits the generated state back to the repo.
+
+Main responsibilities:
+1. Wake assignments according to currentDay.
+2. Scan submissions/ for uploaded files and convert loose uploads into attempt folders.
+3. Queue and grade ungraded attempts.
+4. Update per-course gradebook and system log.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -5,424 +20,440 @@ import json
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
-from grader_runner import grade_assignment
+from grader_runner import grade_attempt
 from gradebook_builder import rebuild_gradebook
 
 ROOT = Path(__file__).resolve().parents[1]
-COURSES_ROOT = ROOT / "courses"
-DATA_DIR = ROOT / "data"
-CATALOG_PATH = COURSES_ROOT / "catalog.json"
+COURSES_DIR = ROOT / "courses"
+CATALOG_PATH = COURSES_DIR / "catalog.json"
+GLOBAL_DATA_DIR = ROOT / "data"
+GLOBAL_LOG_PATH = GLOBAL_DATA_DIR / "system_log.json"
+
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 def read_json(path: Path, fallback: Any = None) -> Any:
     if not path.exists():
+        return fallback
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
         if fallback is not None:
             return fallback
-        raise FileNotFoundError(path)
-    return json.loads(path.read_text(encoding="utf-8"))
+        raise
 
 
 def write_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
-def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def load_catalog() -> Dict[str, Any]:
-    fallback = {
-        "activeCourseId": "webdev-30",
-        "installedCourses": [{"courseId": "webdev-30", "title": "30-Day Web Development", "path": "courses/webdev-30", "status": "active"}],
-        "removedCourses": [],
-    }
-    return read_json(CATALOG_PATH, fallback)
-
-
-def course_dir(course_id: str) -> Path:
-    return COURSES_ROOT / course_id
-
-
-def course_runtime_dir(cdir: Path) -> Path:
-    return cdir / "runtime"
-
-
-def legacy_data_path(filename: str) -> Path:
-    return DATA_DIR / filename
-
-
-def runtime_path(cdir: Path, filename: str) -> Path:
-    return course_runtime_dir(cdir) / filename
-
-
-def course(cdir: Path) -> Dict[str, Any]:
-    return read_json(cdir / "course.json")
-
-
-def ensure_runtime(cdir: Path) -> None:
-    crs = course(cdir)
-    runtime = course_runtime_dir(cdir)
-    runtime.mkdir(parents=True, exist_ok=True)
-    cid = crs.get("courseId", cdir.name)
-
-    state_file = runtime / "course_state.json"
-    if not state_file.exists():
-        legacy = read_json(legacy_data_path("course_state.json"), None) if cid == "webdev-30" else None
-        state = legacy or {
-            "courseId": cid,
-            "mode": "github",
-            "currentDay": 1,
-            "durationDays": crs.get("durationDays", 30),
-            "lastDailyUpdateDay": 0,
-            "graderMode": crs.get("defaultGrader", "mock"),
-            "updatedAt": utc_now(),
+def load_catalog() -> dict[str, Any]:
+    if not CATALOG_PATH.exists():
+        # Backward-compatible fallback for old single-course repos.
+        return {
+            "activeCourseId": "webdev-30",
+            "installedCourses": [
+                {
+                    "courseId": "webdev-30",
+                    "title": "30-Day Web Development",
+                    "path": "courses/webdev-30",
+                    "status": "active",
+                }
+            ],
+            "removedCourses": [],
         }
-        state["courseId"] = cid
-        state.setdefault("durationDays", crs.get("durationDays", 30))
-        write_json(state_file, state)
-
-    gradebook_file = runtime / "gradebook.json"
-    if not gradebook_file.exists():
-        legacy = read_json(legacy_data_path("gradebook.json"), None) if cid == "webdev-30" else None
-        write_json(gradebook_file, legacy or {"courseId": cid, "assignments": [], "currentAverage": None, "currentLetterGrade": None, "currentGpa": None, "finalEvaluation": None, "updatedAt": utc_now()})
-
-    log_file = runtime / "system_log.json"
-    if not log_file.exists():
-        legacy = read_json(legacy_data_path("system_log.json"), None) if cid == "webdev-30" else None
-        write_json(log_file, legacy or [])
+    return read_json(CATALOG_PATH, {"installedCourses": []})
 
 
-def log(cdir: Path, message: str, day: int | None = None, event_type: str = "system") -> None:
-    ensure_runtime(cdir)
-    path = runtime_path(cdir, "system_log.json")
-    logs = read_json(path, [])
-    logs.append({"day": day, "type": event_type, "message": message, "at": utc_now()})
-    write_json(path, logs[-300:])
-
-    # Backward compatibility for webdev-30.
-    if cdir.name == "webdev-30":
-        write_json(legacy_data_path("system_log.json"), logs[-300:])
+def course_path_from_catalog_entry(entry: dict[str, Any]) -> Path:
+    raw = entry.get("path") or f"courses/{entry.get('courseId')}"
+    path = ROOT / raw
+    return path.resolve()
 
 
-def state(cdir: Path) -> Dict[str, Any]:
-    ensure_runtime(cdir)
-    return read_json(runtime_path(cdir, "course_state.json"))
+def get_course_entries(course_arg: str) -> list[dict[str, Any]]:
+    catalog = load_catalog()
+    installed = catalog.get("installedCourses", [])
+
+    if course_arg and course_arg != "all":
+        entries = [c for c in installed if c.get("courseId") == course_arg]
+        if not entries:
+            raise SystemExit(f"Course not found in catalog: {course_arg}")
+        return entries
+
+    # By default, run every installed course except archived/removed items.
+    return [
+        c for c in installed
+        if str(c.get("status", "active")).lower() in {"active", "installed", "paused"}
+    ]
 
 
-def save_state(cdir: Path, data: Dict[str, Any]) -> None:
-    data["updatedAt"] = utc_now()
-    write_json(runtime_path(cdir, "course_state.json"), data)
-    if cdir.name == "webdev-30":
-        write_json(legacy_data_path("course_state.json"), data)
+def append_global_log(day: int | None, event_type: str, message: str, course_id: str | None = None) -> None:
+    logs = read_json(GLOBAL_LOG_PATH, [])
+    logs.append(
+        {
+            "timestamp": now_iso(),
+            "courseId": course_id,
+            "day": day,
+            "type": event_type,
+            "message": message,
+        }
+    )
+    write_json(GLOBAL_LOG_PATH, logs[-500:])
 
 
-def assignment_folder(cdir: Path, aid: str) -> Path:
-    return cdir / "assignments" / aid
+def append_assignment_event(data: dict[str, Any], day: int, event_type: str, message: str) -> None:
+    events = data.setdefault("events", [])
+    # Prevent duplicate day/type spam when workflow runs multiple times.
+    if not any(e.get("day") == day and e.get("type") == event_type and e.get("message") == message for e in events):
+        events.append({"day": day, "type": event_type, "message": message})
 
 
-def load_assignment(cdir: Path, aid: str) -> Dict[str, Any]:
-    return read_json(assignment_folder(cdir, aid) / "assignment.json")
+def ensure_assignment_data(assignment: dict[str, Any], data_path: Path) -> dict[str, Any]:
+    data = read_json(data_path, None)
+    aid = assignment["assignmentId"]
+
+    if not isinstance(data, dict):
+        data = {}
+
+    data.setdefault("assignmentId", aid)
+    data.setdefault("status", "locked")
+    data.setdefault("isVisible", False)
+    data.setdefault("openedAtDay", None)
+    data.setdefault("dueAtDay", assignment.get("dueAtDay"))
+    data.setdefault("lastUpdatedDay", None)
+    data.setdefault(
+        "submission",
+        {
+            "hasSubmission": False,
+            "currentAttemptId": None,
+            "submittedAtDay": None,
+            "submittedAtDate": None,
+            "submissionDir": None,
+        },
+    )
+    data.setdefault(
+        "grading",
+        {
+            "status": "not_graded",
+            "queuedAtDay": None,
+            "gradedAtDay": None,
+            "aiOutputDir": None,
+            "score": None,
+            "letterGrade": None,
+            "gpaValue": None,
+        },
+    )
+    data.setdefault(
+        "flags",
+        {
+            "isDueSoon": False,
+            "isOverdue": False,
+            "isLate": False,
+            "isClosed": False,
+        },
+    )
+    data.setdefault("events", [])
+    return data
 
 
-def load_assignment_data(cdir: Path, aid: str) -> Dict[str, Any]:
-    return read_json(assignment_folder(cdir, aid) / "data.json")
+def assignment_folders(course_dir: Path, course: dict[str, Any]) -> list[Path]:
+    root = course_dir / "assignments"
+    result: list[Path] = []
+    for aid in course.get("assignments", []):
+        if isinstance(aid, str):
+            result.append(root / aid)
+        elif isinstance(aid, dict):
+            # Allow future manifest-like entries.
+            assignment_id = aid.get("assignmentId") or aid.get("id")
+            if assignment_id:
+                result.append(root / assignment_id)
+    return result
 
 
-def save_assignment_data(cdir: Path, aid: str, data: Dict[str, Any]) -> None:
-    data["lastUpdatedDay"] = state(cdir).get("currentDay", 1)
-    write_json(assignment_folder(cdir, aid) / "data.json", data)
+def update_assignment_status(
+    assignment: dict[str, Any],
+    data: dict[str, Any],
+    current_day: int,
+) -> None:
+    appears = int(assignment.get("appearsAtDay", 1))
+    due = int(assignment.get("dueAtDay", appears))
+    grading_status = str(data.get("grading", {}).get("status", "")).lower()
+    has_submission = bool(data.get("submission", {}).get("hasSubmission"))
+
+    data["isVisible"] = current_day >= appears
+    data["lastUpdatedDay"] = current_day
+    data["dueAtDay"] = due
+
+    flags = data.setdefault("flags", {})
+    flags["isDueSoon"] = False
+    flags["isOverdue"] = False
+
+    if grading_status == "graded":
+        data["status"] = "graded"
+        return
+
+    if has_submission:
+        data["status"] = "submitted"
+        return
+
+    if current_day < appears:
+        data["status"] = "locked"
+        data["isVisible"] = False
+        return
+
+    if data.get("openedAtDay") is None:
+        data["openedAtDay"] = appears
+        append_assignment_event(
+            data,
+            current_day,
+            "assignment_available",
+            f"{assignment.get('title', assignment.get('assignmentId'))} became available.",
+        )
+
+    if current_day > due:
+        data["status"] = "overdue"
+        flags["isOverdue"] = True
+        append_assignment_event(
+            data,
+            current_day,
+            "assignment_overdue",
+            f"{assignment.get('title', assignment.get('assignmentId'))} is overdue.",
+        )
+        return
+
+    days_until_due = due - current_day
+    if days_until_due <= 2:
+        data["status"] = "due_soon"
+        flags["isDueSoon"] = True
+        if days_until_due == 0:
+            append_assignment_event(
+                data,
+                current_day,
+                "assignment_due_today",
+                f"{assignment.get('title', assignment.get('assignmentId'))} is due today.",
+            )
+    else:
+        data["status"] = "available"
 
 
-def add_event(data: Dict[str, Any], day: int, event_type: str, message: str) -> None:
-    data.setdefault("events", []).append({"day": day, "type": event_type, "message": message, "at": utc_now()})
+def existing_attempt_numbers(submissions_dir: Path) -> list[int]:
+    nums: list[int] = []
+    if not submissions_dir.exists():
+        return nums
+    for child in submissions_dir.iterdir():
+        if child.is_dir() and child.name.startswith("attempt-"):
+            try:
+                nums.append(int(child.name.split("-", 1)[1]))
+            except ValueError:
+                pass
+    return sorted(nums)
 
 
-def submission_items(submissions_dir: Path) -> List[Path]:
+def next_attempt_id(submissions_dir: Path) -> str:
+    nums = existing_attempt_numbers(submissions_dir)
+    return f"attempt-{(nums[-1] + 1) if nums else 1:03d}"
+
+
+def loose_submission_files(submissions_dir: Path) -> list[Path]:
     if not submissions_dir.exists():
         return []
-    ignored = {".gitkeep", ".DS_Store"}
-    items: List[Path] = []
-    for item in submissions_dir.iterdir():
-        if item.name in ignored or item.name.startswith("."):
+    files = []
+    for child in submissions_dir.iterdir():
+        if child.name.startswith("."):
             continue
-        if item.is_dir() and item.name.startswith("attempt-"):
+        if child.is_dir() and child.name.startswith("attempt-"):
             continue
-        items.append(item)
-    return items
+        files.append(child)
+    return files
 
 
-def attempt_dirs(submissions_dir: Path) -> List[Path]:
-    if not submissions_dir.exists():
-        return []
-    return sorted([p for p in submissions_dir.glob("attempt-*") if p.is_dir()])
+def normalize_loose_submission(
+    course_id: str,
+    assignment: dict[str, Any],
+    assignment_dir: Path,
+    data: dict[str, Any],
+    current_day: int,
+) -> bool:
+    submissions_dir = assignment_dir / "submissions"
+    submissions_dir.mkdir(parents=True, exist_ok=True)
 
+    loose = loose_submission_files(submissions_dir)
+    if not loose:
+        return False
 
-def attempt_has_files(attempt_dir: Path) -> bool:
-    return attempt_dir.exists() and any(p.is_file() for p in attempt_dir.rglob("*"))
+    attempt_id = next_attempt_id(submissions_dir)
+    attempt_dir = submissions_dir / attempt_id
+    attempt_dir.mkdir(parents=True, exist_ok=True)
 
+    for item in loose:
+        dest = attempt_dir / item.name
+        if dest.exists():
+            # If a duplicate somehow exists, keep the new one with timestamp suffix.
+            dest = attempt_dir / f"{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{item.name}"
+        shutil.move(str(item), str(dest))
 
-def next_attempt_name(submissions_dir: Path) -> str:
-    attempts = attempt_dirs(submissions_dir)
-    nums: List[int] = []
-    for attempt in attempts:
-        try:
-            nums.append(int(attempt.name.split("-")[-1]))
-        except ValueError:
-            pass
-    return f"attempt-{(max(nums) + 1 if nums else 1):03d}"
+    rel_attempt = attempt_dir.relative_to(ROOT).as_posix()
+    rel_output = (assignment_dir / "ai_output" / attempt_id).relative_to(ROOT).as_posix()
 
-
-def queue_existing_attempt(cdir: Path, aid: str, attempt: str, current_day: int, message: str) -> None:
-    folder = assignment_folder(cdir, aid)
-    ass = load_assignment(cdir, aid)
-    data = load_assignment_data(cdir, aid)
-    target = folder / "submissions" / attempt
-    output_dir = folder / "ai_output" / attempt
-
-    data.setdefault("submission", {})
-    data.setdefault("grading", {})
-    data.setdefault("flags", {})
-    data["submission"].update({
+    data["submission"] = {
         "hasSubmission": True,
-        "currentAttemptId": attempt,
+        "currentAttemptId": attempt_id,
         "submittedAtDay": current_day,
-        "submittedAtDate": utc_now(),
-        "submissionDir": target.as_posix(),
-    })
-    data["flags"]["isLate"] = current_day > ass.get("dueAtDay", current_day)
-    data["grading"].update({
+        "submittedAtDate": now_iso(),
+        "submissionDir": rel_attempt,
+    }
+    data["grading"] = {
         "status": "queued",
         "queuedAtDay": current_day,
         "gradedAtDay": None,
-        "aiOutputDir": output_dir.as_posix(),
+        "aiOutputDir": rel_output,
         "score": None,
         "letterGrade": None,
         "gpaValue": None,
-    })
+    }
     data["status"] = "submitted"
-    add_event(data, current_day, "submitted", message)
-    add_event(data, current_day, "grading_queued", f"Queued {attempt} for grading.")
-    save_assignment_data(cdir, aid, data)
-    log(cdir, f"{aid}: {message}", current_day, "submission")
+    append_assignment_event(
+        data,
+        current_day,
+        "submitted",
+        f"Student submitted {attempt_id}.",
+    )
+    append_assignment_event(
+        data,
+        current_day,
+        "grading_queued",
+        f"{attempt_id} queued for grading.",
+    )
+    append_global_log(
+        current_day,
+        "submission_detected",
+        f"{course_id}/{assignment['assignmentId']} detected {attempt_id}.",
+        course_id,
+    )
+    return True
 
 
-def scan_uploaded_submissions(cdir: Path, aid: str, current_day: int) -> None:
-    folder = assignment_folder(cdir, aid)
-    submissions_dir = folder / "submissions"
-    submissions_dir.mkdir(parents=True, exist_ok=True)
-    data = load_assignment_data(cdir, aid)
+def grade_if_needed(
+    course_dir: Path,
+    course_id: str,
+    assignment: dict[str, Any],
+    assignment_dir: Path,
+    data: dict[str, Any],
+    current_day: int,
+    grader: str,
+) -> bool:
+    grading = data.get("grading", {})
+    if grading.get("status") != "queued":
+        return False
 
-    direct_items = submission_items(submissions_dir)
-    if direct_items:
-        attempt = next_attempt_name(submissions_dir)
-        target = submissions_dir / attempt
-        target.mkdir(parents=True, exist_ok=True)
-        for item in direct_items:
-            dest = target / item.name
-            if dest.exists():
-                if dest.is_dir():
-                    shutil.rmtree(dest)
-                else:
-                    dest.unlink()
-            shutil.move(str(item), str(dest))
-        queue_existing_attempt(cdir, aid, attempt, current_day, f"Detected GitHub upload and normalized it as {attempt}.")
+    attempt_id = data.get("submission", {}).get("currentAttemptId")
+    if not attempt_id:
+        return False
+
+    grade = grade_attempt(course_dir, assignment_dir, assignment, data, attempt_id, grader)
+
+    grading["status"] = "graded"
+    grading["gradedAtDay"] = current_day
+    grading["score"] = grade.get("finalScore")
+    grading["letterGrade"] = grade.get("letterGrade")
+    grading["gpaValue"] = grade.get("gpaValue")
+    data["status"] = "graded"
+
+    append_assignment_event(
+        data,
+        current_day,
+        "graded",
+        f"{attempt_id} graded. Score: {grade.get('finalScore')}.",
+    )
+    append_global_log(
+        current_day,
+        "graded",
+        f"{course_id}/{assignment['assignmentId']} {attempt_id} graded.",
+        course_id,
+    )
+    return True
+
+
+def run_course_daily(course_entry: dict[str, Any], grader: str) -> None:
+    course_id = course_entry.get("courseId")
+    course_dir = course_path_from_catalog_entry(course_entry)
+    course_json_path = course_dir / "course.json"
+
+    if not course_json_path.exists():
+        append_global_log(None, "course_missing", f"Missing course.json for {course_id}", course_id)
         return
 
-    attempts = [p for p in attempt_dirs(submissions_dir) if attempt_has_files(p)]
-    if not attempts:
-        return
-    latest = attempts[-1].name
-    grading_status = data.get("grading", {}).get("status")
-    current_attempt = data.get("submission", {}).get("currentAttemptId")
-    if current_attempt != latest or grading_status in {None, "not_graded"}:
-        queue_existing_attempt(cdir, aid, latest, current_day, f"Detected existing submitted folder {latest}.")
+    course = read_json(course_json_path, {})
+    current_day = int(course.get("currentDay") or course.get("startDay") or 1)
+    duration = int(course.get("durationDays", 30))
+    current_day = max(1, min(current_day, duration))
 
+    changed_any = False
 
-def compute_status(assignment: Dict[str, Any], data: Dict[str, Any], current_day: int) -> str:
-    if data.get("grading", {}).get("status") == "graded":
-        return "graded"
-    if data.get("submission", {}).get("hasSubmission"):
-        return "submitted"
-    if current_day < assignment.get("appearsAtDay", 1):
-        return "locked"
-    if current_day > assignment.get("dueAtDay", current_day):
-        return "overdue"
-    if assignment.get("dueAtDay", current_day) - current_day <= 2:
-        return "due_soon"
-    return "available"
+    for assignment_dir in assignment_folders(course_dir, course):
+        assignment_path = assignment_dir / "assignment.json"
+        if not assignment_path.exists():
+            append_global_log(current_day, "assignment_missing", f"Missing {assignment_path}", course_id)
+            continue
 
+        assignment = read_json(assignment_path, {})
+        data_path = assignment_dir / "data.json"
+        data = ensure_assignment_data(assignment, data_path)
 
-def update_assignment_day(cdir: Path, aid: str, current_day: int) -> None:
-    ass = load_assignment(cdir, aid)
-    data = load_assignment_data(cdir, aid)
-    data.setdefault("submission", {"hasSubmission": False})
-    data.setdefault("flags", {})
-    old_status = data.get("status")
-    data["isVisible"] = current_day >= ass.get("appearsAtDay", 1)
-    data["flags"]["isDueSoon"] = data["isVisible"] and 0 <= ass.get("dueAtDay", current_day) - current_day <= 2 and not data["submission"].get("hasSubmission")
-    data["flags"]["isOverdue"] = current_day > ass.get("dueAtDay", current_day) and not data["submission"].get("hasSubmission")
-    data["flags"]["isClosed"] = current_day > ass.get("dueAtDay", current_day) + ass.get("latePolicy", {}).get("maxLateDays", 0)
-    data["status"] = compute_status(ass, data, current_day)
-    if old_status != data["status"]:
-        add_event(data, current_day, "status_changed", f"Status changed from {old_status} to {data['status']}.")
-        log(cdir, f"{aid}: status changed from {old_status} to {data['status']}", current_day, "assignment")
-    save_assignment_data(cdir, aid, data)
+        before = json.dumps(data, sort_keys=True, ensure_ascii=False)
 
+        update_assignment_status(assignment, data, current_day)
+        normalize_loose_submission(course_id, assignment, assignment_dir, data, current_day)
+        grade_if_needed(course_dir, course_id, assignment, assignment_dir, data, current_day, grader)
 
-def daily_course(course_id: str, grader_mode: str | None = None, advance: bool = False) -> None:
-    cdir = course_dir(course_id)
-    ensure_runtime(cdir)
-    st = state(cdir)
-    current_day = int(st.get("currentDay", 1))
-    mode = grader_mode or st.get("graderMode", "mock")
-    crs = course(cdir)
+        after = json.dumps(data, sort_keys=True, ensure_ascii=False)
+        if before != after:
+            changed_any = True
+            write_json(data_path, data)
 
-    for aid in crs.get("assignments", []):
-        scan_uploaded_submissions(cdir, aid, current_day)
-        update_assignment_day(cdir, aid, current_day)
+    gradebook = rebuild_gradebook(course_dir)
+    append_global_log(current_day, "daily_update", f"Daily update completed for {course_id}.", course_id)
 
-    for aid in crs.get("assignments", []):
-        data = load_assignment_data(cdir, aid)
-        if data.get("grading", {}).get("status") == "queued":
-            try:
-                grade = grade_assignment(cdir, aid, current_day, mode=mode)
-                data = load_assignment_data(cdir, aid)
-                data.setdefault("grading", {}).update({
-                    "status": "graded",
-                    "gradedAtDay": current_day,
-                    "score": grade["finalScore"],
-                    "letterGrade": grade["letterGrade"],
-                    "gpaValue": grade["gpaValue"],
-                })
-                data["status"] = "graded"
-                add_event(data, current_day, "graded", f"Graded: {grade['finalScore']}/100 ({grade['letterGrade']}).")
-                save_assignment_data(cdir, aid, data)
-                log(cdir, f"{aid}: graded {grade['finalScore']}/100", current_day, "grading")
-            except Exception as exc:
-                log(cdir, f"{aid}: grading failed: {exc}", current_day, "error")
+    # Keep legacy/global gradebook for currently viewed course if this course is active.
+    # Frontend can also read per-course gradebooks if present.
+    if course_entry.get("courseId") == load_catalog().get("activeCourseId"):
+        legacy_gradebook = GLOBAL_DATA_DIR / "gradebook.json"
+        write_json(legacy_gradebook, gradebook)
 
-    rebuild_gradebook(cdir)
-    st["lastDailyUpdateDay"] = current_day
-    if advance:
-        st["currentDay"] = min(int(st.get("durationDays", crs.get("durationDays", 30))), current_day + 1)
-    save_state(cdir, st)
-
-
-def active_course_ids() -> List[str]:
-    catalog = load_catalog()
-    ids: List[str] = []
-    for item in catalog.get("installedCourses", []):
-        if item.get("status", "active") in {"active", "installed"}:
-            cid = item.get("courseId")
-            if cid and (COURSES_ROOT / cid / "course.json").exists():
-                ids.append(cid)
-    if not ids and (COURSES_ROOT / "webdev-30" / "course.json").exists():
-        ids.append("webdev-30")
-    return ids
-
-
-def daily_all(grader_mode: str | None = None) -> None:
-    for cid in active_course_ids():
-        daily_course(cid, grader_mode=grader_mode)
-
-
-def next_day(course_id: str, days: int = 1) -> None:
-    cdir = course_dir(course_id)
-    st = state(cdir)
-    duration = int(st.get("durationDays", course(cdir).get("durationDays", 30)))
-    st["currentDay"] = max(1, min(duration, int(st.get("currentDay", 1)) + days))
-    save_state(cdir, st)
-    log(cdir, f"Moved to day {st['currentDay']}", st["currentDay"], "time")
-
-
-def submit(course_id: str, aid: str, source_dir: str | None = None) -> None:
-    cdir = course_dir(course_id)
-    st = state(cdir)
-    current_day = int(st.get("currentDay", 1))
-    folder = assignment_folder(cdir, aid)
-    ass = load_assignment(cdir, aid)
-    submissions_dir = folder / "submissions"
-    attempt = next_attempt_name(submissions_dir)
-    target = submissions_dir / attempt
-    target.mkdir(parents=True, exist_ok=True)
-    if source_dir:
-        src = Path(source_dir)
-        if not src.exists() or not src.is_dir():
-            raise FileNotFoundError(source_dir)
-        for item in src.iterdir():
-            dest = target / item.name
-            if item.is_dir():
-                shutil.copytree(item, dest, dirs_exist_ok=True)
-            else:
-                shutil.copy2(item, dest)
+    if changed_any:
+        print(f"Updated course: {course_id}")
     else:
-        for req in ass.get("submissionRequirements", {}).get("requiredFiles", []):
-            (target / req).parent.mkdir(parents=True, exist_ok=True)
-            if not (target / req).exists():
-                (target / req).write_text(f"<!-- Mock submission for {aid}: {req} -->\n", encoding="utf-8")
-    queue_existing_attempt(cdir, aid, attempt, current_day, f"Submitted {attempt}.")
-
-
-def reset(course_id: str) -> None:
-    cdir = course_dir(course_id)
-    crs = course(cdir)
-    runtime = course_runtime_dir(cdir)
-    write_json(runtime / "course_state.json", {"courseId": course_id, "mode": "github", "currentDay": 1, "durationDays": crs.get("durationDays", 30), "lastDailyUpdateDay": 0, "graderMode": "mock", "updatedAt": utc_now()})
-    write_json(runtime / "system_log.json", [])
-    write_json(runtime / "gradebook.json", {"courseId": course_id, "assignments": [], "currentAverage": None, "currentLetterGrade": None, "currentGpa": None, "finalEvaluation": None, "updatedAt": utc_now()})
-    if course_id == "webdev-30":
-        write_json(DATA_DIR / "course_state.json", read_json(runtime / "course_state.json"))
-        write_json(DATA_DIR / "system_log.json", [])
-        write_json(DATA_DIR / "gradebook.json", read_json(runtime / "gradebook.json"))
-    for aid in crs.get("assignments", []):
-        ass = load_assignment(cdir, aid)
-        data = {"assignmentId": aid, "status": "locked", "isVisible": False, "openedAtDay": ass.get("appearsAtDay", 1), "dueAtDay": ass.get("dueAtDay"), "lastUpdatedDay": 0, "submission": {"hasSubmission": False, "currentAttemptId": None, "submittedAtDay": None, "submittedAtDate": None, "submissionDir": None}, "grading": {"status": "not_graded", "queuedAtDay": None, "gradedAtDay": None, "aiOutputDir": None, "score": None, "letterGrade": None, "gpaValue": None}, "flags": {"isDueSoon": False, "isOverdue": False, "isLate": False, "isClosed": False}, "events": []}
-        write_json(assignment_folder(cdir, aid) / "data.json", data)
-        for d in [assignment_folder(cdir, aid) / "submissions", assignment_folder(cdir, aid) / "ai_output"]:
-            shutil.rmtree(d, ignore_errors=True)
-            d.mkdir(parents=True, exist_ok=True)
-    log(cdir, "Simulation reset", 1, "system")
-
-
-def status(course_id: str) -> None:
-    cdir = course_dir(course_id)
-    print(json.dumps({"state": state(cdir), "gradebook": read_json(runtime_path(cdir, "gradebook.json"), {})}, indent=2, ensure_ascii=False))
+        print(f"No assignment state changes for course: {course_id}")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Correcta scheduler")
-    parser.add_argument("--course", default="webdev-30", help="Course id to process")
-    parser.add_argument("--all-courses", action="store_true", help="Run daily update for every active/installed course in catalog")
-    parser.add_argument("--daily", action="store_true")
-    parser.add_argument("--next-day", action="store_true")
-    parser.add_argument("--jump", type=int)
-    parser.add_argument("--submit")
-    parser.add_argument("--source-dir")
-    parser.add_argument("--reset", action="store_true")
-    parser.add_argument("--status", action="store_true")
-    parser.add_argument("--grader", choices=["mock", "opencode"])
+    parser = argparse.ArgumentParser(description="Correcta daily scheduler")
+    parser.add_argument("--daily", action="store_true", help="Run daily update")
+    parser.add_argument("--course", default="all", help="Course ID to update, or all")
+    parser.add_argument("--grader", default="mock", choices=["mock", "opencode"], help="Grader mode")
+    parser.add_argument("--status", action="store_true", help="Print catalog status")
     args = parser.parse_args()
 
-    if args.all_courses and args.daily:
-        daily_all(args.grader)
+    if args.status:
+        print(json.dumps(load_catalog(), indent=2, ensure_ascii=False))
         return
 
-    cid = args.course
-    if args.reset:
-        reset(cid)
-    if args.submit:
-        submit(cid, args.submit, args.source_dir)
-    if args.next_day:
-        next_day(cid, 1)
-    if args.jump:
-        next_day(cid, args.jump)
-    if args.daily:
-        daily_course(cid, args.grader)
-    if args.status:
-        status(cid)
+    if not args.daily:
+        parser.error("Nothing to do. Use --daily or --status.")
+
+    entries = get_course_entries(args.course)
+    if not entries:
+        print("No courses to update.")
+        return
+
+    for entry in entries:
+        run_course_daily(entry, args.grader)
 
 
 if __name__ == "__main__":
