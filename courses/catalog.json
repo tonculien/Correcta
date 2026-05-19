@@ -4,8 +4,10 @@
     {
       "courseId": "webdev-30",
       "title": "30-Day Web Development",
+      "description": "A simulated 30-day course for HTML, CSS, responsive layout, and JavaScript DOM.",
       "path": "courses/webdev-30",
-      "status": "active"
+      "status": "active",
+      "installedAt": "initial"
     }
   ],
   "removedCourses": []
