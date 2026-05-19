@@ -1,10 +1,10 @@
 {
   "assignmentId": "A01-road-signs",
-  "status": "locked",
-  "isVisible": false,
-  "openedAtDay": null,
+  "status": "due_soon",
+  "isVisible": true,
+  "openedAtDay": 1,
   "dueAtDay": 2,
-  "lastUpdatedDay": null,
+  "lastUpdatedDay": 1,
   "submission": {
     "hasSubmission": false,
     "currentAttemptId": null,
@@ -22,10 +22,16 @@
     "gpaValue": null
   },
   "flags": {
-    "isDueSoon": false,
+    "isDueSoon": true,
     "isOverdue": false,
     "isLate": false,
     "isClosed": false
   },
-  "events": []
+  "events": [
+    {
+      "day": 1,
+      "type": "assignment_available",
+      "message": "Road Signs Reasoning Drill became available."
+    }
+  ]
 }

@@ -1,18 +1,49 @@
 {
   "courseId": "webdev-30",
+  "title": "Correcta Web Development 30-Day Course",
   "assignments": [
     {
       "assignmentId": "A01-html-profile",
+      "status": "graded",
       "score": 89,
       "letterGrade": "B+",
       "gpaValue": 3.3,
-      "weight": 1,
-      "aiOutputDir": "/home/runner/work/Correcta/Correcta/courses/webdev-30/assignments/A01-html-profile/ai_output/attempt-001"
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "A02-css-profile",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "A03-flexbox-gallery",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "A04-js-dom",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "FINAL-mini-web-app",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
     }
   ],
   "currentAverage": 89.0,
   "currentLetterGrade": "B+",
-  "currentGpa": 3.3,
-  "finalEvaluation": null,
-  "updatedAt": "2026-05-19T09:49:53.843705+00:00"
+  "currentGpa": 3.3
 }

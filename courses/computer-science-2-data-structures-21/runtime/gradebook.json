@@ -1,8 +1,57 @@
 {
   "courseId": "computer-science-2-data-structures-21",
-  "assignments": [],
+  "title": "Computer Science 2: Data Structures, Recursion, and Object-Oriented Design",
+  "assignments": [
+    {
+      "assignmentId": "A01-recursive-problem-solving",
+      "status": "available",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "A02-object-oriented-module-design",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "A03-linked-list-stack-queue",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.25
+    },
+    {
+      "assignmentId": "A04-tree-traversal-and-search",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "A05-algorithm-analysis-report",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 0.75
+    },
+    {
+      "assignmentId": "FINAL-data-structure-application",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 2.0
+    }
+  ],
   "currentAverage": null,
   "currentLetterGrade": null,
-  "currentGpa": null,
-  "finalEvaluation": null
+  "currentGpa": null
 }

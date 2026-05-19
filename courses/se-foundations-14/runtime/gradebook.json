@@ -1,8 +1,49 @@
 {
   "courseId": "se-foundations-14",
-  "assignments": [],
+  "title": "14-Day Software Engineering Foundations",
+  "assignments": [
+    {
+      "assignmentId": "A01-requirements-spec",
+      "status": "due_soon",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "A02-design-plan",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "A03-git-workflow",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "A04-testing-report",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 1.0
+    },
+    {
+      "assignmentId": "FINAL-mini-software-project",
+      "status": "locked",
+      "score": null,
+      "letterGrade": null,
+      "gpaValue": null,
+      "weight": 2.0
+    }
+  ],
   "currentAverage": null,
   "currentLetterGrade": null,
-  "currentGpa": null,
-  "finalEvaluation": null
+  "currentGpa": null
 }

@@ -4,7 +4,7 @@
   "isVisible": false,
   "openedAtDay": null,
   "dueAtDay": 8,
-  "lastUpdatedDay": null,
+  "lastUpdatedDay": 1,
   "submission": {
     "hasSubmission": false,
     "currentAttemptId": null,
