@@ -1,0 +1,37 @@
+{
+  "courseId": "se-foundations-14",
+  "title": "14-Day Software Engineering Foundations",
+  "description": "A compact project-based course on software engineering thinking: requirements, design, Git workflow, testing, code quality, and delivery.",
+  "durationDays": 14,
+  "assignments": [
+    "A01-requirements-spec",
+    "A02-design-plan",
+    "A03-git-workflow",
+    "A04-testing-report",
+    "FINAL-mini-software-project"
+  ],
+  "gradingScale": {
+    "gradingMode": "weighted_average",
+    "missingAssignmentScore": 0,
+    "gradingScale": {
+      "A": 93,
+      "A-": 90,
+      "B+": 87,
+      "B": 83,
+      "B-": 80,
+      "C+": 77,
+      "C": 73,
+      "C-": 70,
+      "D": 60,
+      "F": 0
+    },
+    "weights": {
+      "A01-requirements-spec": 1,
+      "A02-design-plan": 1,
+      "A03-git-workflow": 1,
+      "A04-testing-report": 1,
+      "FINAL-mini-software-project": 2
+    },
+    "notes": "The final mini software project is weighted double because it integrates requirements, design, implementation, testing, and delivery."
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "assignmentId": "A03-git-workflow",
+  "courseId": "se-foundations-14",
+  "title": "Git Workflow Evidence",
+  "appearsAtDay": 6,
+  "dueAtDay": 8,
+  "summary": "Demonstrate a small but meaningful Git workflow with readable commits.",
+  "knowledgeRefs": [
+    "K03-git"
+  ],
+  "studentInstructions": [
+    "Create or use a small project folder.",
+    "Make at least 3 meaningful commits.",
+    "Write a short workflow reflection explaining what each commit changed.",
+    "Include evidence of commit history such as a screenshot or copied log.",
+    "Avoid vague commit messages like 'update' or 'fix'."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "git-workflow.md"
+    ],
+    "optionalFiles": [
+      "commit-log.txt",
+      "screenshot.png",
+      "screenshot.jpg"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Commit quality",
+      "points": 30,
+      "description": "Commit messages are specific and meaningful."
+    },
+    {
+      "criterion": "Workflow sequence",
+      "points": 25,
+      "description": "The commits show a logical progression of work."
+    },
+    {
+      "criterion": "Evidence",
+      "points": 20,
+      "description": "The submission includes clear evidence of the commit history."
+    },
+    {
+      "criterion": "Reflection",
+      "points": 15,
+      "description": "The reflection explains the purpose of each commit."
+    },
+    {
+      "criterion": "Professional organization",
+      "points": 10,
+      "description": "The submission is cleanly formatted and easy to evaluate."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 2
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment specification and rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Write clear feedback and deeper notes."
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "assignmentId": "A01-requirements-spec",
+  "courseId": "se-foundations-14",
+  "title": "Requirements Spec",
+  "appearsAtDay": 1,
+  "dueAtDay": 3,
+  "summary": "Write a compact requirements document for a small software idea.",
+  "knowledgeRefs": [
+    "K01-requirements"
+  ],
+  "studentInstructions": [
+    "Choose a small software idea that can be built in 1–2 weeks.",
+    "Define the target user and the problem being solved.",
+    "Write at least 5 user stories.",
+    "Write at least 5 acceptance criteria.",
+    "List at least 3 non-goals to control scope."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "requirements.md"
+    ],
+    "optionalFiles": [
+      "notes.md"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Problem and user clarity",
+      "points": 20,
+      "description": "The target user and problem are specific and understandable."
+    },
+    {
+      "criterion": "User stories",
+      "points": 25,
+      "description": "User stories follow a clear user-goal-reason structure."
+    },
+    {
+      "criterion": "Acceptance criteria",
+      "points": 25,
+      "description": "Criteria are testable and tied to the proposed features."
+    },
+    {
+      "criterion": "Scope control",
+      "points": 20,
+      "description": "Non-goals and boundaries prevent the project from becoming too broad."
+    },
+    {
+      "criterion": "Organization and readability",
+      "points": 10,
+      "description": "The document is structured and easy to read."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 2
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment specification and rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Write clear feedback and deeper notes."
+  ]
+}

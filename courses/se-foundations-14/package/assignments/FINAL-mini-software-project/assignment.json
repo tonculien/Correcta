@@ -1,0 +1,82 @@
+{
+  "assignmentId": "FINAL-mini-software-project",
+  "courseId": "se-foundations-14",
+  "title": "Final Mini Software Project",
+  "appearsAtDay": 11,
+  "dueAtDay": 14,
+  "summary": "Deliver a small working software project with documentation, testing notes, and release notes.",
+  "knowledgeRefs": [
+    "K01-requirements",
+    "K02-design",
+    "K04-testing",
+    "K05-code-quality",
+    "K06-delivery"
+  ],
+  "studentInstructions": [
+    "Build or finalize a small software project based on your requirements.",
+    "Include a README explaining what it does and how to run it.",
+    "Include source files or a clear project folder.",
+    "Include release notes describing what works and what is limited.",
+    "Include testing evidence or a testing summary."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "README.md",
+      "release-notes.md"
+    ],
+    "optionalFiles": [
+      "src/",
+      "app.py",
+      "main.py",
+      "index.html",
+      "style.css",
+      "script.js",
+      "tests/",
+      "testing-report.md"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Functional scope",
+      "points": 25,
+      "description": "The project delivers a small but coherent set of working features."
+    },
+    {
+      "criterion": "Connection to requirements",
+      "points": 20,
+      "description": "The final project reflects the earlier requirements and scope."
+    },
+    {
+      "criterion": "Code organization",
+      "points": 20,
+      "description": "The project files are organized and reasonably maintainable."
+    },
+    {
+      "criterion": "Testing and reliability",
+      "points": 15,
+      "description": "The submission includes evidence of testing and awareness of limitations."
+    },
+    {
+      "criterion": "Documentation and release notes",
+      "points": 20,
+      "description": "README and release notes make the project understandable to another person."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 1
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 2,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment specification and rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Write clear feedback and deeper notes."
+  ]
+}

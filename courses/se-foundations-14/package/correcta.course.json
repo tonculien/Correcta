@@ -1,0 +1,92 @@
+{
+  "packageType": "correcta-course",
+  "formatVersion": "1.0",
+  "courseId": "se-foundations-14",
+  "title": "14-Day Software Engineering Foundations",
+  "description": "A compact project-based course on software engineering thinking: requirements, design, Git workflow, testing, code quality, and delivery.",
+  "durationDays": 14,
+  "author": "Correcta",
+  "language": "en",
+  "createdAt": "2026-05-17",
+  "entry": {
+    "syllabus": "syllabus.md",
+    "grading": "grading.json",
+    "knowledgeRoot": "knowledge",
+    "assignmentRoot": "assignments"
+  },
+  "knowledge": [
+    {
+      "id": "K01-requirements",
+      "title": "Requirements and User Stories",
+      "path": "knowledge/K01-requirements.md",
+      "appearsAtDay": 1
+    },
+    {
+      "id": "K02-design",
+      "title": "Design Thinking and Architecture Sketches",
+      "path": "knowledge/K02-design.md",
+      "appearsAtDay": 3
+    },
+    {
+      "id": "K03-git",
+      "title": "Git Workflow and Commit Quality",
+      "path": "knowledge/K03-git-workflow.md",
+      "appearsAtDay": 5
+    },
+    {
+      "id": "K04-testing",
+      "title": "Testing Strategy and Edge Cases",
+      "path": "knowledge/K04-testing.md",
+      "appearsAtDay": 7
+    },
+    {
+      "id": "K05-code-quality",
+      "title": "Code Quality and Maintainability",
+      "path": "knowledge/K05-code-quality.md",
+      "appearsAtDay": 10
+    },
+    {
+      "id": "K06-delivery",
+      "title": "Release Notes and Final Delivery",
+      "path": "knowledge/K06-delivery.md",
+      "appearsAtDay": 13
+    }
+  ],
+  "assignments": [
+    {
+      "assignmentId": "A01-requirements-spec",
+      "path": "assignments/A01-requirements-spec/assignment.json",
+      "appearsAtDay": 1,
+      "dueAtDay": 3
+    },
+    {
+      "assignmentId": "A02-design-plan",
+      "path": "assignments/A02-design-plan/assignment.json",
+      "appearsAtDay": 4,
+      "dueAtDay": 6
+    },
+    {
+      "assignmentId": "A03-git-workflow",
+      "path": "assignments/A03-git-workflow/assignment.json",
+      "appearsAtDay": 6,
+      "dueAtDay": 8
+    },
+    {
+      "assignmentId": "A04-testing-report",
+      "path": "assignments/A04-testing-report/assignment.json",
+      "appearsAtDay": 8,
+      "dueAtDay": 11
+    },
+    {
+      "assignmentId": "FINAL-mini-software-project",
+      "path": "assignments/FINAL-mini-software-project/assignment.json",
+      "appearsAtDay": 11,
+      "dueAtDay": 14
+    }
+  ],
+  "install": {
+    "targetCourseFolder": "courses/se-foundations-14",
+    "createRuntimeData": true,
+    "allowOverwrite": false
+  }
+}

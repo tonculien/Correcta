@@ -1,0 +1,71 @@
+{
+  "assignmentId": "A04-testing-report",
+  "courseId": "se-foundations-14",
+  "title": "Testing Report",
+  "appearsAtDay": 8,
+  "dueAtDay": 11,
+  "summary": "Write a test plan and test report for your mini project.",
+  "knowledgeRefs": [
+    "K04-testing",
+    "K05-code-quality"
+  ],
+  "studentInstructions": [
+    "List at least 8 tests for your project.",
+    "Include normal cases, edge cases, and invalid input cases.",
+    "For each test, define expected behavior.",
+    "Record whether each test passed, failed, or was not implemented.",
+    "Write a short analysis of the most important failure or risk."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "testing-report.md"
+    ],
+    "optionalFiles": [
+      "test-output.txt"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Test coverage",
+      "points": 30,
+      "description": "The report includes varied normal, edge, and invalid input tests."
+    },
+    {
+      "criterion": "Expected behavior",
+      "points": 20,
+      "description": "Each test has a clear expected result."
+    },
+    {
+      "criterion": "Result tracking",
+      "points": 20,
+      "description": "The report clearly records pass/fail/not implemented status."
+    },
+    {
+      "criterion": "Risk analysis",
+      "points": 20,
+      "description": "The student identifies a meaningful failure, risk, or limitation."
+    },
+    {
+      "criterion": "Formatting",
+      "points": 10,
+      "description": "The report is readable and organized."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 2
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment specification and rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Write clear feedback and deeper notes."
+  ]
+}

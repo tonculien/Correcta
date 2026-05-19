@@ -8,6 +8,15 @@
       "path": "courses/webdev-30",
       "status": "active",
       "installedAt": "initial"
+    },
+    {
+      "courseId": "se-foundations-14",
+      "title": "14-Day Software Engineering Foundations",
+      "description": "A compact project-based course on software engineering thinking: requirements, design, Git workflow, testing, code quality, and delivery.",
+      "path": "courses/se-foundations-14",
+      "status": "active",
+      "installedAt": "2026-05-19T19:47:33Z",
+      "sourcePackage": "/home/runner/work/Correcta/Correcta/package_inbox/se-foundations-14.corr"
     }
   ],
   "removedCourses": []

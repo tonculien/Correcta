@@ -1,0 +1,72 @@
+{
+  "assignmentId": "A02-design-plan",
+  "courseId": "se-foundations-14",
+  "title": "Design Plan",
+  "appearsAtDay": 4,
+  "dueAtDay": 6,
+  "summary": "Create a lightweight design plan for your software idea.",
+  "knowledgeRefs": [
+    "K02-design"
+  ],
+  "studentInstructions": [
+    "Describe the main components of the system.",
+    "Show how data flows through the system.",
+    "Define a simple file/folder structure.",
+    "List important edge cases or constraints.",
+    "Explain one design tradeoff you are making."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "design.md"
+    ],
+    "optionalFiles": [
+      "diagram.png",
+      "diagram.jpg",
+      "diagram.webp"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Component clarity",
+      "points": 25,
+      "description": "Major parts of the system are identified and explained."
+    },
+    {
+      "criterion": "Data flow",
+      "points": 20,
+      "description": "The document explains how information moves through the system."
+    },
+    {
+      "criterion": "Structure plan",
+      "points": 20,
+      "description": "The proposed file/folder structure is reasonable for the project."
+    },
+    {
+      "criterion": "Edge cases and constraints",
+      "points": 20,
+      "description": "The plan recognizes likely failure points or limitations."
+    },
+    {
+      "criterion": "Tradeoff explanation",
+      "points": 15,
+      "description": "At least one design tradeoff is explained thoughtfully."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 2
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment specification and rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Write clear feedback and deeper notes."
+  ]
+}
