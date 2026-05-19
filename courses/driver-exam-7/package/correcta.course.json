@@ -1,0 +1,74 @@
+{
+  "packageType": "correcta-course",
+  "formatVersion": "1.0",
+  "courseId": "driver-exam-7",
+  "title": "7-Day Driver Exam Prep",
+  "description": "A short Correcta course for practicing road signs, right-of-way, parking, safety decisions, and final driver-exam style reasoning.",
+  "durationDays": 7,
+  "author": "Correcta",
+  "language": "en",
+  "createdAt": "2026-05-17",
+  "entry": {
+    "syllabus": "syllabus.md",
+    "grading": "grading.json",
+    "knowledgeRoot": "knowledge",
+    "assignmentRoot": "assignments"
+  },
+  "knowledge": [
+    {
+      "id": "K01-road-signs",
+      "title": "Road Signs and Signals",
+      "path": "knowledge/K01-road-signs.md",
+      "appearsAtDay": 1
+    },
+    {
+      "id": "K02-right-of-way",
+      "title": "Right-of-Way and Intersections",
+      "path": "knowledge/K02-right-of-way.md",
+      "appearsAtDay": 2
+    },
+    {
+      "id": "K03-parking-and-hills",
+      "title": "Parking, Hills, and Vehicle Control",
+      "path": "knowledge/K03-parking-and-hills.md",
+      "appearsAtDay": 4
+    },
+    {
+      "id": "K04-risk-and-safety",
+      "title": "Risk, Safety, and Exam Reasoning",
+      "path": "knowledge/K04-risk-and-safety.md",
+      "appearsAtDay": 6
+    }
+  ],
+  "assignments": [
+    {
+      "assignmentId": "A01-road-signs",
+      "path": "assignments/A01-road-signs/assignment.json",
+      "appearsAtDay": 1,
+      "dueAtDay": 2
+    },
+    {
+      "assignmentId": "A02-right-of-way",
+      "path": "assignments/A02-right-of-way/assignment.json",
+      "appearsAtDay": 2,
+      "dueAtDay": 4
+    },
+    {
+      "assignmentId": "A03-parking-hills",
+      "path": "assignments/A03-parking-hills/assignment.json",
+      "appearsAtDay": 4,
+      "dueAtDay": 6
+    },
+    {
+      "assignmentId": "FINAL-practice-test",
+      "path": "assignments/FINAL-practice-test/assignment.json",
+      "appearsAtDay": 6,
+      "dueAtDay": 7
+    }
+  ],
+  "install": {
+    "targetCourseFolder": "courses/driver-exam-7",
+    "createRuntimeData": true,
+    "allowOverwrite": false
+  }
+}

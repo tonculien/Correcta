@@ -1,0 +1,34 @@
+{
+  "courseId": "driver-exam-7",
+  "title": "7-Day Driver Exam Prep",
+  "description": "A short Correcta course for practicing road signs, right-of-way, parking, safety decisions, and final driver-exam style reasoning.",
+  "durationDays": 7,
+  "assignments": [
+    "A01-road-signs",
+    "A02-right-of-way",
+    "A03-parking-hills",
+    "FINAL-practice-test"
+  ],
+  "gradingScale": {
+    "gradingMode": "weighted_average",
+    "missingAssignmentScore": 0,
+    "gradingScale": {
+      "A": 93,
+      "A-": 90,
+      "B+": 87,
+      "B": 83,
+      "B-": 80,
+      "C+": 77,
+      "C": 73,
+      "C-": 70,
+      "D": 60,
+      "F": 0
+    },
+    "weights": {
+      "A01-road-signs": 1,
+      "A02-right-of-way": 1,
+      "A03-parking-hills": 1,
+      "FINAL-practice-test": 2
+    }
+  }
+}

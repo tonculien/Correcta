@@ -1,0 +1,9 @@
+{
+  "courseId": "driver-exam-7",
+  "mode": "github",
+  "currentDay": 1,
+  "durationDays": 7,
+  "status": "active",
+  "lastDailyUpdateDay": null,
+  "graderMode": "mock"
+}

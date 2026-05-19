@@ -1,0 +1,60 @@
+{
+  "assignmentId": "A01-road-signs",
+  "courseId": "driver-exam-7",
+  "title": "Road Signs Reasoning Drill",
+  "appearsAtDay": 1,
+  "dueAtDay": 2,
+  "estimatedTimeMinutes": 35,
+  "difficulty": "easy",
+  "summary": "Explain how different types of road signs guide driver behavior.",
+  "knowledgeRefs": ["K01-road-signs"],
+  "studentInstructions": [
+    "Create a text or Markdown file named road-signs-response.txt or road-signs-response.md.",
+    "Explain the difference between regulatory, warning, and guide signs.",
+    "Give one example of each sign type and describe what action the driver should take.",
+    "Write at least one paragraph explaining why identifying the required driver action is more important than only memorizing the sign appearance."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": ["road-signs-response.txt or road-signs-response.md"],
+    "optionalFiles": [],
+    "acceptedFileTypes": [".txt", ".md"]
+  },
+  "rubric": [
+    {
+      "criterion": "Sign category distinction",
+      "points": 25,
+      "description": "Clearly distinguishes regulatory, warning, and guide signs."
+    },
+    {
+      "criterion": "Examples and driver actions",
+      "points": 30,
+      "description": "Provides relevant examples and explains the required driver action for each."
+    },
+    {
+      "criterion": "Reasoning quality",
+      "points": 30,
+      "description": "Explains why action-based understanding matters for safe driving and exam questions."
+    },
+    {
+      "criterion": "Clarity and organization",
+      "points": 15,
+      "description": "The response is readable, organized, and easy to follow."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 2
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Reward reasoning that connects signs to driver action.",
+    "Every deduction must be justified."
+  ]
+}

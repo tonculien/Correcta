@@ -1,0 +1,65 @@
+{
+  "assignmentId": "A03-parking-hills",
+  "courseId": "driver-exam-7",
+  "title": "Hill Parking and Control Rules",
+  "appearsAtDay": 4,
+  "dueAtDay": 6,
+  "estimatedTimeMinutes": 40,
+  "difficulty": "medium",
+  "summary": "Explain hill parking wheel direction and basic vehicle control reasoning.",
+  "knowledgeRefs": [
+    "K03-parking-and-hills"
+  ],
+  "studentInstructions": [
+    "Create a file named parking-hills-response.txt or parking-hills-response.md.",
+    "Explain wheel direction for uphill with curb, downhill with curb, and no curb.",
+    "Explain the reason behind the rule using what would happen if the vehicle rolls.",
+    "Add one short response about what to do if a vehicle control problem occurs while driving."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "parking-hills-response.txt or parking-hills-response.md"
+    ],
+    "optionalFiles": [],
+    "acceptedFileTypes": [
+      ".txt",
+      ".md"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Hill parking accuracy",
+      "points": 35,
+      "description": "Correctly explains wheel direction for the required hill parking cases."
+    },
+    {
+      "criterion": "Cause-effect reasoning",
+      "points": 30,
+      "description": "Explains why the wheels should be turned that way if the vehicle rolls."
+    },
+    {
+      "criterion": "Vehicle control response",
+      "points": 20,
+      "description": "Gives a safe, controlled response to a vehicle-control problem."
+    },
+    {
+      "criterion": "Clarity",
+      "points": 15,
+      "description": "The response is easy to understand and not overly vague."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 2
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Pay attention to whether the student explains the physical reason behind the rule."
+  ]
+}

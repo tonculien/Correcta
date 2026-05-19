@@ -1,0 +1,66 @@
+{
+  "assignmentId": "A02-right-of-way",
+  "courseId": "driver-exam-7",
+  "title": "Right-of-Way Scenario Analysis",
+  "appearsAtDay": 2,
+  "dueAtDay": 4,
+  "estimatedTimeMinutes": 45,
+  "difficulty": "medium",
+  "summary": "Analyze right-of-way scenarios and justify the safest legal action.",
+  "knowledgeRefs": [
+    "K02-right-of-way"
+  ],
+  "studentInstructions": [
+    "Create a text or Markdown file named right-of-way-analysis.txt or right-of-way-analysis.md.",
+    "Write three short scenarios involving intersections, pedestrians, or emergency vehicles.",
+    "For each scenario, identify who should yield and why.",
+    "Explain the safety principle behind each answer."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "right-of-way-analysis.txt or right-of-way-analysis.md"
+    ],
+    "optionalFiles": [],
+    "acceptedFileTypes": [
+      ".txt",
+      ".md"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Scenario relevance",
+      "points": 20,
+      "description": "Scenarios are realistic and related to right-of-way decisions."
+    },
+    {
+      "criterion": "Correct yielding logic",
+      "points": 35,
+      "description": "Correctly identifies who should yield in each scenario."
+    },
+    {
+      "criterion": "Safety reasoning",
+      "points": 30,
+      "description": "Explains the safety principle behind each decision."
+    },
+    {
+      "criterion": "Clarity and structure",
+      "points": 15,
+      "description": "The response is organized and understandable."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 2
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not require exact legal wording if the reasoning is correct.",
+    "Reward answers that prioritize legal, predictable, and conflict-reducing actions."
+  ]
+}

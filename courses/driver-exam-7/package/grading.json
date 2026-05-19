@@ -1,0 +1,22 @@
+{
+  "gradingMode": "weighted_average",
+  "missingAssignmentScore": 0,
+  "gradingScale": {
+    "A": 93,
+    "A-": 90,
+    "B+": 87,
+    "B": 83,
+    "B-": 80,
+    "C+": 77,
+    "C": 73,
+    "C-": 70,
+    "D": 60,
+    "F": 0
+  },
+  "weights": {
+    "A01-road-signs": 1,
+    "A02-right-of-way": 1,
+    "A03-parking-hills": 1,
+    "FINAL-practice-test": 2
+  }
+}

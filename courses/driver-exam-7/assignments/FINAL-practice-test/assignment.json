@@ -1,0 +1,71 @@
+{
+  "assignmentId": "FINAL-practice-test",
+  "courseId": "driver-exam-7",
+  "title": "Final Driver Exam Practice Reflection",
+  "appearsAtDay": 6,
+  "dueAtDay": 7,
+  "estimatedTimeMinutes": 60,
+  "difficulty": "medium",
+  "summary": "Create and answer a mini driver-exam practice set with reasoning.",
+  "knowledgeRefs": [
+    "K01-road-signs",
+    "K02-right-of-way",
+    "K03-parking-and-hills",
+    "K04-risk-and-safety"
+  ],
+  "studentInstructions": [
+    "Create a file named final-practice-test.txt or final-practice-test.md.",
+    "Write 10 driver-exam style questions.",
+    "Each question should have four answer choices.",
+    "Mark the correct answer for each question.",
+    "Add a one-sentence explanation for why the correct answer is best.",
+    "Include at least two questions about road signs, two about right-of-way, two about parking/control, and two about risk/safety."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "final-practice-test.txt or final-practice-test.md"
+    ],
+    "optionalFiles": [],
+    "acceptedFileTypes": [
+      ".txt",
+      ".md"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Question coverage",
+      "points": 25,
+      "description": "The practice set covers road signs, right-of-way, parking/control, and risk/safety."
+    },
+    {
+      "criterion": "Answer quality",
+      "points": 25,
+      "description": "Correct answers are reasonable and consistent with safe driving principles."
+    },
+    {
+      "criterion": "Explanation quality",
+      "points": 30,
+      "description": "Explanations show clear reasoning rather than only naming the answer."
+    },
+    {
+      "criterion": "Exam realism and clarity",
+      "points": 20,
+      "description": "Questions are clear, plausible, and close to driver-exam style."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 1
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 2,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Reward plausible exam-style reasoning.",
+    "Do not require exact DMV wording, but unsafe reasoning should lose points."
+  ]
+}
