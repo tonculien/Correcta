@@ -52,10 +52,22 @@ def save_catalog(catalog: dict[str, Any]) -> None:
     write_json(CATALOG_PATH, catalog)
 
 
+def safe_extract_zip(package_path: Path, dest: Path) -> None:
+    """Extract zip while blocking path traversal."""
+    dest = dest.resolve()
+    with zipfile.ZipFile(package_path, "r") as zf:
+        for member in zf.infolist():
+            target = (dest / member.filename).resolve()
+            if not str(target).startswith(str(dest)):
+                raise ValueError(f"Unsafe path in package: {member.filename}")
+        zf.extractall(dest)
+
+
 def normalize_manifest_root(extracted_root: Path) -> Path:
     direct = extracted_root / "correcta.course.json"
     if direct.exists():
         return extracted_root
+
     matches = list(extracted_root.rglob("correcta.course.json"))
     if len(matches) == 1:
         return matches[0].parent
@@ -67,6 +79,7 @@ def normalize_manifest_root(extracted_root: Path) -> Path:
 def validate_assignment(path: Path, expected_course_id: str) -> dict[str, Any]:
     if not path.exists():
         raise ValueError(f"Missing assignment file: {path}")
+
     assignment = read_json(path)
     required = [
         "assignmentId",
@@ -82,13 +95,17 @@ def validate_assignment(path: Path, expected_course_id: str) -> dict[str, Any]:
     missing = [key for key in required if key not in assignment]
     if missing:
         raise ValueError(f"{path} missing keys: {', '.join(missing)}")
+
     if assignment["courseId"] != expected_course_id:
         raise ValueError(f"{path} courseId does not match manifest courseId")
+
     if int(assignment["appearsAtDay"]) > int(assignment["dueAtDay"]):
         raise ValueError(f"{path} appearsAtDay cannot be after dueAtDay")
+
     points = sum(int(item.get("points", 0)) for item in assignment.get("rubric", []))
     if points != 100:
         raise ValueError(f"{path} rubric must add up to 100, got {points}")
+
     return assignment
 
 
@@ -101,11 +118,10 @@ def validate_package(package_path: Path) -> dict[str, Any]:
 
     with tempfile.TemporaryDirectory() as td:
         temp = Path(td)
-        with zipfile.ZipFile(package_path, "r") as zf:
-            zf.extractall(temp)
+        safe_extract_zip(package_path, temp)
         root = normalize_manifest_root(temp)
-        manifest = read_json(root / "correcta.course.json")
 
+        manifest = read_json(root / "correcta.course.json")
         required = ["packageType", "formatVersion", "courseId", "title", "durationDays", "entry", "assignments"]
         missing = [key for key in required if key not in manifest]
         if missing:
@@ -128,6 +144,7 @@ def validate_package(package_path: Path) -> dict[str, Any]:
             if aid in seen:
                 raise ValueError(f"Duplicate assignmentId in manifest: {aid}")
             seen.add(aid)
+
             assignment = validate_assignment(root / rel, course_id)
             if assignment["assignmentId"] != aid:
                 raise ValueError(f"Assignment id mismatch: manifest {aid}, file {assignment['assignmentId']}")
@@ -173,6 +190,7 @@ def import_package(package_path: Path, allow_overwrite: bool = False) -> None:
     manifest = validate_package(package_path)
     course_id = manifest["courseId"]
     target = COURSES_DIR / course_id
+
     if target.exists() and not allow_overwrite:
         raise FileExistsError(f"Course already installed: {course_id}")
     if target.exists() and allow_overwrite:
@@ -180,8 +198,7 @@ def import_package(package_path: Path, allow_overwrite: bool = False) -> None:
 
     with tempfile.TemporaryDirectory() as td:
         temp = Path(td)
-        with zipfile.ZipFile(package_path, "r") as zf:
-            zf.extractall(temp)
+        safe_extract_zip(package_path.resolve(), temp)
         package_root = normalize_manifest_root(temp)
 
         package_target = target / "package"
@@ -208,6 +225,7 @@ def import_package(package_path: Path, allow_overwrite: bool = False) -> None:
         })
         write_json(runtime / "system_log.json", [])
 
+        grading = read_json(package_root / manifest.get("entry", {}).get("grading", "grading.json"))
         course_json = {
             "courseId": course_id,
             "title": manifest["title"],
@@ -215,7 +233,7 @@ def import_package(package_path: Path, allow_overwrite: bool = False) -> None:
             "durationDays": manifest["durationDays"],
             "defaultGrader": "mock",
             "assignments": [item["assignmentId"] for item in manifest["assignments"]],
-            "gradingScale": read_json(package_root / manifest.get("entry", {}).get("grading", "grading.json")).get("gradingScale", {}),
+            "gradingScale": grading.get("gradingScale", {}),
             "packageManifest": "package/correcta.course.json",
         }
         write_json(target / "course.json", course_json)
@@ -253,6 +271,7 @@ def uninstall_course(course_id: str) -> None:
     src = COURSES_DIR / course_id
     if not src.exists():
         raise FileNotFoundError(f"Course not installed: {course_id}")
+
     REMOVED_DIR.mkdir(parents=True, exist_ok=True)
     dest = REMOVED_DIR / f"{course_id}_{now_stamp()}"
     shutil.move(str(src), str(dest))
@@ -275,6 +294,7 @@ def uninstall_course(course_id: str) -> None:
             removed_meta = dict(c)
         else:
             new_installed.append(c)
+
     catalog["installedCourses"] = new_installed
     if removed_meta:
         removed_meta.update({"archivePath": str(dest.relative_to(ROOT)), "removedAt": report["removedAt"]})
@@ -292,13 +312,14 @@ def restore_course(archive_path: Path) -> None:
     report_path = src / "uninstall_report.json"
     if not report_path.exists():
         raise ValueError("Archive is missing uninstall_report.json")
+
     report = read_json(report_path)
     course_id = report["courseId"]
     dest = COURSES_DIR / course_id
     if dest.exists():
         raise FileExistsError(f"Course already installed: {course_id}")
-    shutil.move(str(src), str(dest))
 
+    shutil.move(str(src), str(dest))
     title = course_id
     course_json = dest / "course.json"
     if course_json.exists():
@@ -321,8 +342,7 @@ def restore_course(archive_path: Path) -> None:
 
 
 def list_courses() -> None:
-    catalog = ensure_catalog()
-    print(json.dumps(catalog, indent=2, ensure_ascii=False))
+    print(json.dumps(ensure_catalog(), indent=2, ensure_ascii=False))
 
 
 def main() -> int:
