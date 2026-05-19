@@ -1,0 +1,89 @@
+{
+  "assignmentId": "A05-algorithm-analysis-report",
+  "courseId": "computer-science-2-data-structures-21",
+  "title": "Algorithm Analysis Report",
+  "appearsAtDay": 16,
+  "dueAtDay": 19,
+  "estimatedTimeMinutes": 90,
+  "difficulty": "medium",
+  "summary": "Analyze the time and space complexity of selected course implementations and compare design tradeoffs.",
+  "knowledgeRefs": [
+    "K05-algorithm-analysis-and-tradeoffs",
+    "K03-linked-lists-stacks-and-queues",
+    "K04-trees-traversal-and-search"
+  ],
+  "studentInstructions": [
+    "Create analysis_report.md.",
+    "Analyze at least six operations or functions from your previous assignments, including at least two linked structure operations and two tree operations.",
+    "For each selected operation, state the time complexity, space complexity, and the code behavior that supports your claim.",
+    "Include one comparison between two possible implementations, such as linked-list stack versus Python list stack or breadth-first search using a queue versus recursive depth-first traversal.",
+    "Discuss at least two tradeoffs involving speed, memory, simplicity, or maintainability."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "analysis_report.md"
+    ],
+    "optionalFiles": [
+      "referenced_code.zip"
+    ],
+    "acceptedFileTypes": [
+      ".md",
+      ".txt",
+      ".pdf",
+      ".html",
+      ".css",
+      ".js",
+      ".py",
+      ".java"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Correct time complexity claims",
+      "points": 25,
+      "description": "The report gives accurate Big-O time complexity for at least six selected operations or functions."
+    },
+    {
+      "criterion": "Correct space complexity claims",
+      "points": 20,
+      "description": "The report gives accurate space complexity and accounts for auxiliary structures or recursive call stack usage."
+    },
+    {
+      "criterion": "Evidence from code behavior",
+      "points": 20,
+      "description": "Each claim is supported by references to loops, recursion patterns, traversal behavior, or data structure operations."
+    },
+    {
+      "criterion": "Implementation comparison",
+      "points": 15,
+      "description": "The report compares two plausible implementations and explains how their complexity or behavior differs."
+    },
+    {
+      "criterion": "Tradeoff discussion",
+      "points": 15,
+      "description": "The report discusses at least two meaningful tradeoffs involving performance, memory, simplicity, or maintainability."
+    },
+    {
+      "criterion": "Clarity and organization",
+      "points": 5,
+      "description": "The report is readable, structured, and uses terminology consistently."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Return grade.json, feedback.md, and notes.md."
+  ]
+}

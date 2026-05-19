@@ -1,0 +1,82 @@
+{
+  "assignmentId": "A01-recursive-problem-solving",
+  "courseId": "computer-science-2-data-structures-21",
+  "title": "Recursive Problem Solving",
+  "appearsAtDay": 1,
+  "dueAtDay": 4,
+  "estimatedTimeMinutes": 120,
+  "difficulty": "medium",
+  "summary": "Implement and explain a set of recursive functions that demonstrate base cases, decomposition, and call stack reasoning.",
+  "knowledgeRefs": [
+    "K01-recursion-and-problem-decomposition"
+  ],
+  "studentInstructions": [
+    "Create a Python file named recursion_solutions.py.",
+    "Implement recursive solutions for sum_list(values), reverse_string(text), count_occurrences(values, target), and is_palindrome(text).",
+    "Do not use loops inside the four required recursive functions.",
+    "Create explanation.md explaining the base case, recursive case, and input reduction for each function.",
+    "Include at least three test examples per function either in a main block or in a separate test section of the Python file.",
+    "Make sure your code handles empty inputs and one-item inputs where applicable."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "recursion_solutions.py",
+      "explanation.md"
+    ],
+    "optionalFiles": [],
+    "acceptedFileTypes": [
+      ".md",
+      ".txt",
+      ".pdf",
+      ".html",
+      ".css",
+      ".js",
+      ".py",
+      ".java"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Correct recursive implementation",
+      "points": 35,
+      "description": "All four functions return correct results and use recursion as the primary solution strategy."
+    },
+    {
+      "criterion": "Base cases and termination",
+      "points": 20,
+      "description": "Each function has appropriate base cases and guarantees progress toward termination without infinite recursion."
+    },
+    {
+      "criterion": "Edge-case handling",
+      "points": 15,
+      "description": "The solution handles empty inputs, one-item inputs, repeated values, mixed case or spacing for palindrome checks when documented, and other relevant boundary cases."
+    },
+    {
+      "criterion": "Explanation quality",
+      "points": 20,
+      "description": "The explanation clearly identifies base cases, recursive cases, and how each recursive call reduces the problem."
+    },
+    {
+      "criterion": "Testing evidence",
+      "points": 10,
+      "description": "The submission includes meaningful tests or examples for each function, including at least one edge case per function."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Return grade.json, feedback.md, and notes.md."
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "assignmentId": "A04-tree-traversal-and-search",
+  "courseId": "computer-science-2-data-structures-21",
+  "title": "Tree Traversal and Search",
+  "appearsAtDay": 12,
+  "dueAtDay": 16,
+  "estimatedTimeMinutes": 150,
+  "difficulty": "medium",
+  "summary": "Implement binary tree traversal and search operations, then explain traversal order and recursive structure.",
+  "knowledgeRefs": [
+    "K04-trees-traversal-and-search",
+    "K01-recursion-and-problem-decomposition"
+  ],
+  "studentInstructions": [
+    "Create tree_algorithms.py containing a TreeNode class and traversal functions.",
+    "Implement preorder(root), inorder(root), postorder(root), breadth_first(root), and contains(root, target).",
+    "Each traversal function must return a list of visited values in order.",
+    "Create tests.py that builds at least three different trees and verifies traversal and search results.",
+    "Create traversal_note.md explaining the difference between the traversal orders and when each could be useful."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "tree_algorithms.py",
+      "tests.py",
+      "traversal_note.md"
+    ],
+    "optionalFiles": [],
+    "acceptedFileTypes": [
+      ".md",
+      ".txt",
+      ".pdf",
+      ".html",
+      ".css",
+      ".js",
+      ".py",
+      ".java"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Traversal correctness",
+      "points": 30,
+      "description": "Preorder, inorder, postorder, and breadth-first traversal functions return correct visit orders for varied tree shapes."
+    },
+    {
+      "criterion": "Search correctness",
+      "points": 15,
+      "description": "The contains function correctly finds present values and rejects missing values, including for empty trees."
+    },
+    {
+      "criterion": "Recursive structure and base cases",
+      "points": 20,
+      "description": "Recursive traversal functions use clear base cases and correctly combine results from subtrees."
+    },
+    {
+      "criterion": "Testing coverage",
+      "points": 20,
+      "description": "Tests cover balanced, unbalanced, empty, and single-node trees where applicable."
+    },
+    {
+      "criterion": "Traversal explanation",
+      "points": 15,
+      "description": "The note accurately explains traversal order differences and gives plausible use cases for at least two traversal types."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Return grade.json, feedback.md, and notes.md."
+  ]
+}

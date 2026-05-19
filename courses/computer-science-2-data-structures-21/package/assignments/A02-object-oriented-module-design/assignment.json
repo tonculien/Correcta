@@ -1,0 +1,82 @@
+{
+  "assignmentId": "A02-object-oriented-module-design",
+  "courseId": "computer-science-2-data-structures-21",
+  "title": "Object-Oriented Module Design",
+  "appearsAtDay": 4,
+  "dueAtDay": 8,
+  "estimatedTimeMinutes": 150,
+  "difficulty": "medium",
+  "summary": "Design, implement, test, and explain a small object-oriented module with clear responsibilities and valid object state.",
+  "knowledgeRefs": [
+    "K02-object-oriented-design-and-testing"
+  ],
+  "studentInstructions": [
+    "Create a Python file named module.py containing at least two related classes for a small domain such as task management, playlist management, inventory tracking, or student records.",
+    "Each class must have a clear responsibility, a constructor, and at least three behavior-focused methods.",
+    "Create tests.py with tests that verify normal cases, edge cases, and at least one invalid input case.",
+    "Create design_note.md explaining class responsibilities, important invariants, and why your public methods belong in the interface.",
+    "Avoid designing classes that only store data without meaningful behavior."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "module.py",
+      "tests.py",
+      "design_note.md"
+    ],
+    "optionalFiles": [],
+    "acceptedFileTypes": [
+      ".md",
+      ".txt",
+      ".pdf",
+      ".html",
+      ".css",
+      ".js",
+      ".py",
+      ".java"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Class responsibility and cohesion",
+      "points": 25,
+      "description": "Classes represent focused concepts with methods that support their responsibilities without unnecessary mixing of concerns."
+    },
+    {
+      "criterion": "Encapsulation and state validity",
+      "points": 20,
+      "description": "The design protects important state, enforces reasonable invariants, and avoids uncontrolled external mutation."
+    },
+    {
+      "criterion": "Method behavior and correctness",
+      "points": 20,
+      "description": "Public methods perform useful behavior correctly across normal and boundary cases."
+    },
+    {
+      "criterion": "Testing coverage",
+      "points": 20,
+      "description": "Tests verify key methods, edge cases, and invalid input behavior using assertions or a test framework."
+    },
+    {
+      "criterion": "Design explanation",
+      "points": 15,
+      "description": "The design note explains class choices, invariants, and interface decisions clearly and specifically."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Return grade.json, feedback.md, and notes.md."
+  ]
+}

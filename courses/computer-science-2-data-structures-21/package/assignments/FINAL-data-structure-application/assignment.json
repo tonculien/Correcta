@@ -1,0 +1,95 @@
+{
+  "assignmentId": "FINAL-data-structure-application",
+  "courseId": "computer-science-2-data-structures-21",
+  "title": "Final Project: Data Structure Application",
+  "appearsAtDay": 17,
+  "dueAtDay": 21,
+  "estimatedTimeMinutes": 300,
+  "difficulty": "hard",
+  "summary": "Build a small Python application that uses course data structures, includes tests, and explains design and complexity decisions.",
+  "knowledgeRefs": [
+    "K01-recursion-and-problem-decomposition",
+    "K02-object-oriented-design-and-testing",
+    "K03-linked-lists-stacks-and-queues",
+    "K04-trees-traversal-and-search",
+    "K05-algorithm-analysis-and-tradeoffs"
+  ],
+  "studentInstructions": [
+    "Create a small Python application that solves a realistic problem using at least one course data structure such as a stack, queue, linked list, tree, or traversal algorithm.",
+    "Suggested project ideas include a task scheduler, playlist manager, browser history simulator, expression tree evaluator, contact organizer, file tree explorer, or help desk queue simulator.",
+    "Create app.py as the main entry point and place supporting classes in structures.py or another clearly named Python file.",
+    "Create tests.py with tests for core behavior and important edge cases.",
+    "Create project_report.md explaining the problem, data structures used, class design, complexity of key operations, limitations, and possible improvements.",
+    "The project must be runnable from app.py without requiring external packages beyond the Python standard library unless clearly documented."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "app.py",
+      "tests.py",
+      "project_report.md"
+    ],
+    "optionalFiles": [
+      "structures.py",
+      "README.md"
+    ],
+    "acceptedFileTypes": [
+      ".md",
+      ".txt",
+      ".pdf",
+      ".html",
+      ".css",
+      ".js",
+      ".py",
+      ".java"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Functional application behavior",
+      "points": 25,
+      "description": "The application runs, solves a clear problem, and supports meaningful user or programmatic interactions without major crashes."
+    },
+    {
+      "criterion": "Appropriate data structure use",
+      "points": 20,
+      "description": "The project uses at least one course data structure appropriately and the choice fits the problem requirements."
+    },
+    {
+      "criterion": "Object-oriented design and organization",
+      "points": 15,
+      "description": "The code is organized into clear classes or modules with focused responsibilities and readable interfaces."
+    },
+    {
+      "criterion": "Testing quality",
+      "points": 15,
+      "description": "The tests cover core features, edge cases, and at least one failure or boundary condition."
+    },
+    {
+      "criterion": "Complexity and design explanation",
+      "points": 15,
+      "description": "The report accurately explains key operation complexity, design decisions, limitations, and tradeoffs."
+    },
+    {
+      "criterion": "Code clarity and maintainability",
+      "points": 10,
+      "description": "The code uses clear names, avoids unnecessary duplication, and is understandable to another student at the same level."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Return grade.json, feedback.md, and notes.md."
+  ]
+}

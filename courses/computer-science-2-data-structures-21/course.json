@@ -1,0 +1,38 @@
+{
+  "courseId": "computer-science-2-data-structures-21",
+  "title": "Computer Science 2: Data Structures, Recursion, and Object-Oriented Design",
+  "description": "A practical 21-day college-style course on recursion, object-oriented design, core data structures, tree traversal, and algorithm analysis using Python.",
+  "durationDays": 21,
+  "assignments": [
+    "A01-recursive-problem-solving",
+    "A02-object-oriented-module-design",
+    "A03-linked-list-stack-queue",
+    "A04-tree-traversal-and-search",
+    "A05-algorithm-analysis-report",
+    "FINAL-data-structure-application"
+  ],
+  "gradingScale": {
+    "gradingMode": "weighted_average",
+    "missingAssignmentScore": 0,
+    "gradingScale": {
+      "A": 93,
+      "A-": 90,
+      "B+": 87,
+      "B": 83,
+      "B-": 80,
+      "C+": 77,
+      "C": 73,
+      "C-": 70,
+      "D": 60,
+      "F": 0
+    },
+    "weights": {
+      "A01-recursive-problem-solving": 1,
+      "A02-object-oriented-module-design": 1,
+      "A03-linked-list-stack-queue": 1.25,
+      "A04-tree-traversal-and-search": 1,
+      "A05-algorithm-analysis-report": 0.75,
+      "FINAL-data-structure-application": 2
+    }
+  }
+}

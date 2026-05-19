@@ -26,6 +26,15 @@
       "status": "active",
       "installedAt": "2026-05-19T19:52:00Z",
       "sourcePackage": "/home/runner/work/Correcta/Correcta/package_inbox/driver-exam-7.corr"
+    },
+    {
+      "courseId": "computer-science-2-data-structures-21",
+      "title": "Computer Science 2: Data Structures, Recursion, and Object-Oriented Design",
+      "description": "A practical 21-day college-style course on recursion, object-oriented design, core data structures, tree traversal, and algorithm analysis using Python.",
+      "path": "courses/computer-science-2-data-structures-21",
+      "status": "active",
+      "installedAt": "2026-05-19T20:34:49Z",
+      "sourcePackage": "/home/runner/work/Correcta/Correcta/package_inbox/computer-science-2-data-structures-21.corr"
     }
   ],
   "removedCourses": []

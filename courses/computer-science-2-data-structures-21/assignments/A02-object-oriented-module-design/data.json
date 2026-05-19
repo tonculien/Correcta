@@ -1,0 +1,31 @@
+{
+  "assignmentId": "A02-object-oriented-module-design",
+  "status": "locked",
+  "isVisible": false,
+  "openedAtDay": null,
+  "dueAtDay": 8,
+  "lastUpdatedDay": null,
+  "submission": {
+    "hasSubmission": false,
+    "currentAttemptId": null,
+    "submittedAtDay": null,
+    "submittedAtDate": null,
+    "submissionDir": null
+  },
+  "grading": {
+    "status": "not_graded",
+    "queuedAtDay": null,
+    "gradedAtDay": null,
+    "aiOutputDir": null,
+    "score": null,
+    "letterGrade": null,
+    "gpaValue": null
+  },
+  "flags": {
+    "isDueSoon": false,
+    "isOverdue": false,
+    "isLate": false,
+    "isClosed": false
+  },
+  "events": []
+}

@@ -1,0 +1,92 @@
+{
+  "packageType": "correcta-course",
+  "formatVersion": "1.0",
+  "courseId": "computer-science-2-data-structures-21",
+  "title": "Computer Science 2: Data Structures, Recursion, and Object-Oriented Design",
+  "description": "A practical 21-day college-style course on recursion, object-oriented design, core data structures, tree traversal, and algorithm analysis using Python.",
+  "durationDays": 21,
+  "author": "Correcta Team",
+  "language": "en",
+  "createdAt": "2026-05-19",
+  "entry": {
+    "syllabus": "syllabus.md",
+    "grading": "grading.json",
+    "knowledgeRoot": "knowledge",
+    "assignmentRoot": "assignments"
+  },
+  "knowledge": [
+    {
+      "id": "K01-recursion-and-problem-decomposition",
+      "title": "Recursion and Problem Decomposition",
+      "path": "knowledge/K01-recursion-and-problem-decomposition.md",
+      "appearsAtDay": 1
+    },
+    {
+      "id": "K02-object-oriented-design-and-testing",
+      "title": "Object-Oriented Design and Testing",
+      "path": "knowledge/K02-object-oriented-design-and-testing.md",
+      "appearsAtDay": 4
+    },
+    {
+      "id": "K03-linked-lists-stacks-and-queues",
+      "title": "Linked Lists, Stacks, and Queues",
+      "path": "knowledge/K03-linked-lists-stacks-and-queues.md",
+      "appearsAtDay": 8
+    },
+    {
+      "id": "K04-trees-traversal-and-search",
+      "title": "Trees, Traversal, and Search",
+      "path": "knowledge/K04-trees-traversal-and-search.md",
+      "appearsAtDay": 12
+    },
+    {
+      "id": "K05-algorithm-analysis-and-tradeoffs",
+      "title": "Algorithm Analysis and Tradeoffs",
+      "path": "knowledge/K05-algorithm-analysis-and-tradeoffs.md",
+      "appearsAtDay": 16
+    }
+  ],
+  "assignments": [
+    {
+      "assignmentId": "A01-recursive-problem-solving",
+      "path": "assignments/A01-recursive-problem-solving/assignment.json",
+      "appearsAtDay": 1,
+      "dueAtDay": 4
+    },
+    {
+      "assignmentId": "A02-object-oriented-module-design",
+      "path": "assignments/A02-object-oriented-module-design/assignment.json",
+      "appearsAtDay": 4,
+      "dueAtDay": 8
+    },
+    {
+      "assignmentId": "A03-linked-list-stack-queue",
+      "path": "assignments/A03-linked-list-stack-queue/assignment.json",
+      "appearsAtDay": 8,
+      "dueAtDay": 12
+    },
+    {
+      "assignmentId": "A04-tree-traversal-and-search",
+      "path": "assignments/A04-tree-traversal-and-search/assignment.json",
+      "appearsAtDay": 12,
+      "dueAtDay": 16
+    },
+    {
+      "assignmentId": "A05-algorithm-analysis-report",
+      "path": "assignments/A05-algorithm-analysis-report/assignment.json",
+      "appearsAtDay": 16,
+      "dueAtDay": 19
+    },
+    {
+      "assignmentId": "FINAL-data-structure-application",
+      "path": "assignments/FINAL-data-structure-application/assignment.json",
+      "appearsAtDay": 17,
+      "dueAtDay": 21
+    }
+  ],
+  "install": {
+    "targetCourseFolder": "courses/computer-science-2-data-structures-21",
+    "createRuntimeData": true,
+    "allowOverwrite": false
+  }
+}

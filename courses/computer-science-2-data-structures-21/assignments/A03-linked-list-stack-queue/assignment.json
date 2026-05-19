@@ -1,0 +1,88 @@
+{
+  "assignmentId": "A03-linked-list-stack-queue",
+  "courseId": "computer-science-2-data-structures-21",
+  "title": "Linked List, Stack, and Queue Implementation",
+  "appearsAtDay": 8,
+  "dueAtDay": 12,
+  "estimatedTimeMinutes": 180,
+  "difficulty": "hard",
+  "summary": "Implement a singly linked list and use it to support stack and queue behavior with explicit edge-case handling.",
+  "knowledgeRefs": [
+    "K03-linked-lists-stacks-and-queues"
+  ],
+  "studentInstructions": [
+    "Create linked_structures.py containing Node, SinglyLinkedList, LinkedStack, and LinkedQueue classes.",
+    "SinglyLinkedList must support append, prepend, remove_first, find, __len__, and to_list behavior.",
+    "LinkedStack must support push, pop, peek, is_empty, and __len__ behavior.",
+    "LinkedQueue must support enqueue, dequeue, peek, is_empty, and __len__ behavior.",
+    "Create tests.py with tests for empty structures, one-item structures, multiple-item structures, and removal until empty.",
+    "Create implementation_note.md explaining how head and tail references change during key operations."
+  ],
+  "submissionRequirements": {
+    "requiredFiles": [
+      "linked_structures.py",
+      "tests.py",
+      "implementation_note.md"
+    ],
+    "optionalFiles": [],
+    "acceptedFileTypes": [
+      ".md",
+      ".txt",
+      ".pdf",
+      ".html",
+      ".css",
+      ".js",
+      ".py",
+      ".java"
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Singly linked list correctness",
+      "points": 25,
+      "description": "The linked list correctly implements required operations and maintains accurate head, tail, and length state."
+    },
+    {
+      "criterion": "Stack behavior",
+      "points": 15,
+      "description": "The stack correctly follows last-in, first-out behavior and handles pop and peek on empty structures appropriately."
+    },
+    {
+      "criterion": "Queue behavior",
+      "points": 15,
+      "description": "The queue correctly follows first-in, first-out behavior and maintains head and tail during enqueue and dequeue operations."
+    },
+    {
+      "criterion": "Edge-case handling",
+      "points": 20,
+      "description": "The implementation correctly handles empty, one-node, and multi-node cases without losing references or corrupting length."
+    },
+    {
+      "criterion": "Testing coverage",
+      "points": 15,
+      "description": "Tests cover all required structures and operations, including boundary cases and error behavior."
+    },
+    {
+      "criterion": "Implementation explanation",
+      "points": 10,
+      "description": "The note clearly explains reference updates for append, prepend, remove_first, push, pop, enqueue, and dequeue."
+    }
+  ],
+  "latePolicy": {
+    "allowLate": true,
+    "penaltyPerDay": 10,
+    "maxLateDays": 3
+  },
+  "resubmissionPolicy": {
+    "allowResubmission": true,
+    "maxAttempts": 3,
+    "keepHighestScore": true
+  },
+  "gradingInstructions": [
+    "Use only this assignment and its rubric.",
+    "Do not invent extra criteria.",
+    "Check required files before grading quality.",
+    "Every deduction must be justified.",
+    "Return grade.json, feedback.md, and notes.md."
+  ]
+}
